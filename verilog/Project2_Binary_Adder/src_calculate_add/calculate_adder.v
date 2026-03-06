@@ -1,0 +1,23 @@
+module calculate_adder(
+    input x,y,cin,
+    output sum,cout
+);
+
+    wire s1,c1,c2;
+
+    half_adder HA1(
+        .a(x),
+        .b(y),
+        .sum(s1),
+        .carry(c1)
+    );
+
+    half_adder HA2(
+        .a(s1),
+        .b(cin),
+        .sum(sum),
+        .carry(c2)
+    );
+
+    assign cout=c1|c2;
+endmodule

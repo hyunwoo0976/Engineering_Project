@@ -1,0 +1,9 @@
+./Project9_mini_processer_using_FSM/src_mini_processer1/m_adder.v
+./Project9_mini_processer_using_FSM/src_mini_processer1/m_ALU.v
+./Project9_mini_processer_using_FSM/src_mini_processer1/m_FSM.v
+./Project9_mini_processer_using_FSM/src_mini_processer1/m_register.v
+./Project9_mini_processer_using_FSM/src_mini_processer1/m_subtracter.v
+./Project9_mini_processer_using_FSM/src_mini_processer1/m_top_module.v
+./Project2_Binary_Adder/src_calculate_add/half_adder.v
+./Project3_subtractor/src_calculate_sub/adder.v
+./Project9_mini_processer_using_FSM/tb/mini_processer1_tb.v

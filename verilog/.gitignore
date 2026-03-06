@@ -1,0 +1,8 @@
+# Simulation outputs
+*.out
+*.vcd
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db

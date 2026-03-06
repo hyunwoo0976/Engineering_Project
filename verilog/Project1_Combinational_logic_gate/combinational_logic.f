@@ -1,0 +1,3 @@
+./Project1_Combinational_logic_gate/src_logic_gate/combinational_logic.v
+./Project1_Combinational_logic_gate/src_logic_gate/standard_logic.v
+./Project1_Combinational_logic_gate/tb/combinational_logic_tb.v
