@@ -13,7 +13,7 @@
 
     Derived the hardware logic gates by analyzing the binary addition truth table.
     
-![Truth Table](./images/half-adder.PNG)
+![Truth Table](./img_calculate_adder/half-adder.PNG)
 
     - Sum: Corresponds to the XOR operation, which outputs '1' only when inputs $a$ and $b$ are different.
 
@@ -160,17 +160,17 @@ Automated Test Stimulus:
 Utilized scripts to link design modules and testbenches stored in separate files for an efficient iverilog workflow.
 
 ### Troubleshooting
-​![error](./images/binary_adder_error.png)
+​![error](./img_calculate_adder/binary_adder_error.png)
 The following path-related errors occurred during the verification process.
 
 This error occurred because the target files were not located in the current terminal's working directory.
 
 
-​![sol](./images/binary_adder_sol.png)
+​![sol](./img_calculate_adder/binary_adder_sol.png)
 Resolved the issue using the following method
 
 
-​![binary_Adder_waveform](./images/binary_adder_wave.PNG)
+​![binary_Adder_waveform](./img_calculate_adder/binary_adder_wave.PNG)
 
 Through Waveform Verification,the logical correctness of the design was confirmed using the following example:
 

@@ -150,7 +150,7 @@ Excessive complexity increases hardware resource usage -> High gate count(High r
     
 ### waveform Analysis
 
-![Waveform Result](./img%20file/combinational_logic_wave.PNG)
+![Waveform Result](./img_combinational_logic_gate/combinational_logic_wave.PNG)
 
 -Validation: By comparing f and f1 in the GTKWave waveform, I confirmed that the optimized logic (Data-flow) performs exactly the same function as the complex gate-level circuit.
 

@@ -1,38 +1,47 @@
 `timescale 1ns/1ps
-module shift_reg_tb #(parameter W=4);
-    reg [W-1:0]a;
-    reg clk,load,reset;
-    wire N;
+module shift_reg_tb #(parameter W=32);
+    reg [W-1:0]D_in;
+    reg clk,load,reset,shift;
+    wire [W-1:0]D_out;
+    wire fin;
 
     always #5 clk=~clk;
 
-    shift_reg #(.W(4))uut0(
-        .D_a(a),
-        .N(N),
+    Top_register #(.W(32))uut0(
+        .D_in(D_in),
         .clk(clk),
         .reset(reset),
-        .load(load)
+        .load(load),
+        .shift(shift),
+        .D_out(D_out),
+        .fin(fin)
     );
 
     initial begin
-        $dumpfile("reg.vcd");
+        $dumpfile("Shift_register.vcd");
         $dumpvars(0,shift_reg_tb);
     end
 
     integer i;
     initial begin
-        clk=0; reset=1; load=0;
-        #9;
+        clk=0; reset=1; load=0; shift=0;
+        #15;
         reset=0;
-        a=5;
+        D_in=32'hA5A5_F0F0;
+        
+        @(posedge clk);
         load=1;
+        
+        @(posedge clk);
+        load=0;
+        shift=1;
 
-        for(i=0;i<4;i=i+1)begin
-            @(posedge clk);
-            load=0;
-        end
+        wait(fin==1'b1);
 
-        #10;
+        @(posedge clk);
+        shift=0;
+        #20;
         $finish;
+
     end
 endmodule
