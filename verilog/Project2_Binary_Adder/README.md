@@ -1,4 +1,4 @@
-### Project 2: Binary Adder
+# Project 2: Binary Adder
 
 >Goal: Understand the architecture of a Half Adder and extend it to design a Full Adder capable of processing carry-in signals from lower-order bits.
 

@@ -1,4 +1,4 @@
-### Project 1: Combinational logic gate
+# Project 1: Combinational logic gate
 >Goal: Optimize and minimize complex logic circuits
 
 f=(~x)&y&z|(~x)&y&z|x&z

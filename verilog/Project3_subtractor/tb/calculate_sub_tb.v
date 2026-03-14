@@ -19,7 +19,7 @@ module calculate_sub_tb;
     end
    
     initial begin
-        $dumpfile("cal.vcd");
+        $dumpfile("calculate_sub.vcd");
         $dumpvars(0,calculate_sub_tb);
     end
 
