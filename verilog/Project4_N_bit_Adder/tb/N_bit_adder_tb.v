@@ -18,7 +18,7 @@ module N_bit_adder_tb #(parameter N=4);
     end
 
     initial begin
-        $dumpfile("N_bit.vcd");
+        $dumpfile("N_bit_adder.vcd");
         $dumpvars(0,N_bit_adder_tb);
     end
 
