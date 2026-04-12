@@ -124,7 +124,7 @@ module calculate_add_tb;
     end
 
     initial begin
-        $dumpfile("calculate.vcd");
+        $dumpfile("calculate_add.vcd");
         $dumpvars(0,calculate_add_tb);
     end
 

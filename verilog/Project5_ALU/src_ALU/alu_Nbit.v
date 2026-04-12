@@ -1,8 +1,9 @@
 module alu_Nbit #(parameter N=4)(
-    input [N-1:0]a,b,
-    input [1:0]mode,
+    input [N-1:0] a, b,
+    input [1:0] mode,
     input cin,
-    output reg [N:0] result
+    output reg [N:0] result,
+    output reg cout
 );
     wire[N-1:0] add_sum;
     wire[N-1:0] sub_sum;
@@ -17,7 +18,7 @@ module alu_Nbit #(parameter N=4)(
         .cin(cin)
     );
 
-    calculate_sub  #(.N(N)) uut1(
+    calculate_sub #(.N(N)) uut1(
         .a(a),
         .b(b),
         .cout(sub_cout),
@@ -27,11 +28,17 @@ module alu_Nbit #(parameter N=4)(
 
     always @(*) begin
         case(mode)
-            2'b00:result={add_cout, add_sum};
-            2'b01:result={1'b0, sub_sum};
-            2'b10:result={1'b0, a&b};
-            2'b11:result={1'b0,a|b};
-            default:result=0;
+            2'b00:begin
+                result = {add_cout, add_sum};
+                cout<=add_cout;
+            end
+            2'b01:begin
+                result = {1'b0, sub_sum};
+                cout<=sub_cout;
+            end
+            2'b10: result = {1'b0, a & b};
+            2'b11: result = {1'b0, a | b};
+            default: result = 0;
         endcase
     end
 endmodule

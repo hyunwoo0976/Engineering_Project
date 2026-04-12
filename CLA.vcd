@@ -1,0 +1,68 @@
+$date
+	Sun Apr 12 20:10:39 2026
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ps
+$end
+$scope module CLA_tb $end
+$var wire 32 ! Sum [31:0] $end
+$var wire 1 " Cout $end
+$var reg 1 # Cin $end
+$var reg 32 $ shift_FRAC_A [31:0] $end
+$var reg 32 % shift_FRAC_B [31:0] $end
+$scope module uut0 $end
+$var wire 1 # Cin $end
+$var wire 32 & G [31:0] $end
+$var wire 32 ' P [31:0] $end
+$var wire 32 ( Sum [31:0] $end
+$var wire 32 ) shift_FRAC_A [31:0] $end
+$var wire 32 * shift_FRAC_B [31:0] $end
+$var wire 1 " Cout $end
+$var wire 33 + C [32:0] $end
+$scope begin cla_blocks[0] $end
+$upscope $end
+$scope begin cla_blocks[1] $end
+$upscope $end
+$scope begin cla_blocks[2] $end
+$upscope $end
+$scope begin cla_blocks[3] $end
+$upscope $end
+$scope begin cla_blocks[4] $end
+$upscope $end
+$scope begin cla_blocks[5] $end
+$upscope $end
+$scope begin cla_blocks[6] $end
+$upscope $end
+$scope begin cla_blocks[7] $end
+$upscope $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+#0
+$dumpvars
+b0 +
+b0 *
+b0 )
+b0 (
+b0 '
+b0 &
+b0 %
+b0 $
+0#
+0"
+b0 !
+$end
+#10000
+b1111100 +
+b1001000 !
+b1001000 (
+b1010 &
+b110100 '
+b101010 %
+b101010 *
+b11110 $
+b11110 )
+#60000
