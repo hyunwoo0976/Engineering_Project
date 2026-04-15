@@ -10,7 +10,7 @@ module CLA_tb #(parameter W=32);
         $dumpvars(0,CLA_tb);
     end
 
-    CLA uut0(
+    CLA #(.W(48))uut0(
         .shift_FRAC_A(shift_FRAC_A),
         .shift_FRAC_B(shift_FRAC_B),
         .Cin(Cin),

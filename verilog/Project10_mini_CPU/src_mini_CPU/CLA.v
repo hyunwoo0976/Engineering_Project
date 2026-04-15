@@ -1,4 +1,4 @@
-module CLA #(parameter W=32)(
+module CLA #(parameter W=48)(
     input [W-1:0]shift_FRAC_A,shift_FRAC_B,
     input Cin,
     output [W-1:0]Sum,
