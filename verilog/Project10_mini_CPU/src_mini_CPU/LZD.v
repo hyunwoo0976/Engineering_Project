@@ -1,11 +1,11 @@
-module LZD#(parameter W = 64)(
-    input[47:0] Sum,
+module LZD#(parameter W = 48)(
+    input[W-1:0] Sum,
     input Cout,
     output reg [5:0]count,
     output reg all_zero
 );
 
-    wire [W-1:0]SUM={Cout,Sum,15'b0};
+    wire [63:0]SUM={Cout,Sum,15'b0};
 
     reg [63:0] temp;
 

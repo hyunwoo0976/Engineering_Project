@@ -1,15 +1,20 @@
-module barrel_shifter(
-    input direction,
+module barrel_shifter #(parameter W=32)(
+    input direction,doing,
     input [7:0]count,
-    input [47:0]shift,
-    output reg [47:0] SHIFT
+    input [W-1:0]shift,
+    output reg [W-1:0] SHIFT
 );
     always @(*)begin
-        if(direction)begin
+        if(doing)begin
+            if(direction)begin
             SHIFT=shift>>count;
+            end
+            else begin
+                SHIFT=shift<<count;
+            end
         end
         else begin
-            SHIFT=shift<<count;
+            SHIFT=shift;
         end
     end
 endmodule
