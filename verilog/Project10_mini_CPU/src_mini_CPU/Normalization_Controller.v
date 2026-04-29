@@ -1,7 +1,7 @@
 module Normalization_Controller#(parameter W=32)(
     input [W-1:0]Sum,
     input Cout,
-    output reg [5:0]count,
+    output reg [7:0]count,
     output reg direction,doing,
     output [W:0]nor_FRAC
 );

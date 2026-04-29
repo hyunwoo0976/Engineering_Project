@@ -2,10 +2,9 @@ module EXPO_SUB #(parameter W=8)(
     input [W-1:0]EXPO_a,EXPO_b,
     output reg [W-1:0]count,
     output reg direction,
-    output reg doing_A,doing_B,
-    output EXPO_big
+    output reg doing_A, doing_B,
+    output [W-1:0]EXPO_big
 );
-
     always @(*)begin
         if(EXPO_a>EXPO_b)begin
             count=EXPO_a-EXPO_b;

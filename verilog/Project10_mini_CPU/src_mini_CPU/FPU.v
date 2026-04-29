@@ -7,7 +7,7 @@ module FPU #(parameter W=32)(
 );
 
     // ====== [Stage 1] ========================================================================
-    wire s1_IN_A, s1_IN_B;
+    wire [31:0]s1_IN_A, s1_IN_B;
 
     wire s1_mode;
 
@@ -27,22 +27,24 @@ module FPU #(parameter W=32)(
     wire [7:0] s2_EXPO_big;
     // ====== [Stage 3] ========================================================================
     wire s3_SIGN_A, s3_SIGN_B;
-    wire s3_FRAC_A, s3_FRAC_B;
+    wire [47:0]s3_FRAC_A, s3_FRAC_B;
     wire s3_bigger;
     wire s3_final_SIGN;
+    wire [7:0]s3_EXPO_big;
 
     wire s3_mode;
 
     wire s3_EXPO_direction;
     wire [7:0] s3_EXPO_count;
     wire s3_EXPO_doing_A, s3_EXPO_doing_B;
-    wire [48:0] s3_FRAC_shifted_A, s3_FRAC_shifted_B;
+    wire [47:0] s3_FRAC_shifted_A, s3_FRAC_shifted_B;
 
     // ====== [Stage 4] ========================================================================
     wire [47:0]s4_FRAC_shifted_A, s4_FRAC_shifted_B;
     wire s4_SIGN_A, s4_SIGN_B;
     wire s4_final_SIGN;
     wire s4_mode;
+    wire [7:0]s4_EXPO_big;
 
     wire s4_eff_sub;
     wire s4_Cin;
@@ -54,6 +56,7 @@ module FPU #(parameter W=32)(
     wire [47:0] s5_FRAC_B;
     wire s5_eff_sub;
     wire s5_final_SIGN;
+    wire [7:0]s5_EXPO_big;
 
     wire s5_FRAC_Cout;
     wire [47:0]s5_FRAC_Sum;
@@ -63,6 +66,7 @@ module FPU #(parameter W=32)(
     wire s6_FRAC_Cout;
     wire s6_eff_sub;
     wire s6_final_SIGN;
+    wire [7:0]s6_EXPO_big;
 
     wire [47:0] s6_FRAC_SUM;
 
@@ -70,17 +74,19 @@ module FPU #(parameter W=32)(
     wire [47:0] s7_FRAC_Sum;
     wire s7_FRAC_Cout;
     wire s7_final_SIGN;
+    wire [7:0]s7_EXPO_big;
 
     wire [48:0] s7_FRAC_nor_FRAC;
-    wire [5:0] s7_FRAC_nor_count;
+    wire [7:0] s7_FRAC_nor_count;
     wire s7_FRAC_nor_direction;
     wire s7_FRAC_nor_doing;
 
     // ====== [Stage 8] ========================================================================
-    wire [5:0] s8_FRAC_nor_count;
+    wire [7:0] s8_FRAC_nor_count;
     wire s8_FRAC_nor_direction;
     wire s8_FRAC_nor_doing;
     wire [48:0] s8_FRAC_nor_FRAC;
+    wire [7:0]s8_EXPO_big;
 
     wire [48:0] s8_FRAC_shifted;
     wire s8_final_SIGN;
@@ -127,9 +133,9 @@ module FPU #(parameter W=32)(
         .FRAC(s1_FRAC_B)
     );
 
-    Pipe_reg_1clk #(.W(48)) reg1_FRAC_A_s1_s2(.clk(clk), .reset(reset), .D(s1_FRAC_A), .Q(s2_FRAC_A));
+    Pipe_reg_1clk #(.W(23)) reg1_FRAC_A_s1_s2(.clk(clk), .reset(reset), .D(s1_FRAC_A), .Q(s2_FRAC_A));
     Pipe_reg_1clk #(.W(48)) reg1_FRAC_A_s2_s3(.clk(clk), .reset(reset), .D({1'b1,s2_FRAC_A,24'b0}), .Q(s3_FRAC_A));
-    Pipe_reg_1clk #(.W(48)) reg1_FRAC_B_s1_s2(.clk(clk), .reset(reset), .D(s1_FRAC_B), .Q(s2_FRAC_B));
+    Pipe_reg_1clk #(.W(23)) reg1_FRAC_B_s1_s2(.clk(clk), .reset(reset), .D(s1_FRAC_B), .Q(s2_FRAC_B));
     Pipe_reg_1clk #(.W(48)) reg1_FRAC_B_s2_s3(.clk(clk), .reset(reset), .D({1'b1,s2_FRAC_B,24'b0}), .Q(s3_FRAC_B));
 
     barrel_shifter #(.W(48))FRAC_shifter1_A_s3(
@@ -212,7 +218,7 @@ module FPU #(parameter W=32)(
         .doing(s7_FRAC_nor_doing)
     );
 
-    Pipe_reg_1clk #(.W(6))reg7_FRAC_count_s7_s8(.clk(clk), .reset(reset), .D(s7_FRAC_nor_count), .Q(s8_FRAC_nor_count));
+    Pipe_reg_1clk #(.W(8))reg7_FRAC_count_s7_s8(.clk(clk), .reset(reset), .D(s7_FRAC_nor_count), .Q(s8_FRAC_nor_count));
     Pipe_reg_1clk #(.W(1))reg7_FRAC_direction_s7_s8(.clk(clk), .reset(reset), .D(s7_FRAC_nor_direction), .Q(s8_FRAC_nor_direction));
     Pipe_reg_1clk #(.W(1))reg7_FRAC_doing_s7_s8(.clk(clk), .reset(reset), .D(s7_FRAC_nor_doing), .Q(s8_FRAC_nor_doing));
     Pipe_reg_1clk #(.W(49))reg7_FRAC_nor_FRAC_s7_s8(.clk(clk), .reset(reset), .D(s7_FRAC_nor_FRAC), .Q(s8_FRAC_nor_FRAC));
@@ -271,7 +277,7 @@ module FPU #(parameter W=32)(
     
     EXPO_CAL #(.W(9))expo_cal_s8(
         .EXPO_in({1'b0,s8_EXPO_big}),
-        .count(s8_FRAC_nor_count),
+        .count(s8_FRAC_nor_count[5:0]),
         .direction(s8_FRAC_nor_direction),
         .doing(s8_FRAC_nor_doing),
         .EXPO_out(s8_EXPO)
@@ -282,7 +288,7 @@ module FPU #(parameter W=32)(
 
     EXPO_CAL #(.W(9))expo_cal_s10(
         .EXPO_in(s10_EXPO),
-        .count(s10_Rounding_count),
+        .count({5'b0,s10_Rounding_count}),
         .direction(s10_Rounding_direction),
         .doing(s10_Rounding_doing),
         .EXPO_out(s10_final_EXPO)

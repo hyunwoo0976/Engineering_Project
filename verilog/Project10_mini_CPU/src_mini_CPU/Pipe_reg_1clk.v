@@ -1,4 +1,4 @@
-module Pipe_reg_FRAC #(parameter W=32)(
+module Pipe_reg_1clk #(parameter W=32)(
     input [W-1:0]D,
     input clk,reset,
     output reg [W-1:0]Q

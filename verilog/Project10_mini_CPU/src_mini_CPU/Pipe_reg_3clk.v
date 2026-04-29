@@ -1,4 +1,4 @@
-module Pipe_reg_delay3 #(parameter W = 8) (
+module Pipe_reg_3clk #(parameter W = 8) (
     input [W-1:0] D,
     input clk, reset,
     output reg [W-1:0] Q
