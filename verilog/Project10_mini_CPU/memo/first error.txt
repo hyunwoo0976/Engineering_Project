@@ -1,0 +1,72 @@
+<ERROR>
+PS C:\Users\USER\Desktop\My project\Engineering_Project> iverilog -o FPU.out -f ./verilog/Project10_mini_CPU/F_file/FPU.f
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:113: warning: Port 4 (Q) of Pipe_reg_1clk expects 32 bits, got 1.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:113:        : Padding 31 high bits of the port.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:114: warning: Port 4 (Q) of Pipe_reg_1clk expects 32 bits, got 1.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:114:        : Padding 31 high bits of the port.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:116: warning: Port 1 (IN) of FPU_unpack expects 32 bits, got 1.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:116:        : Padding 31 high bits of the port.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:123: warning: Port 1 (IN) of FPU_unpack expects 32 bits, got 1.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:123:        : Padding 31 high bits of the port.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:130: warning: Port 1 (D) of Pipe_reg_1clk expects 48 bits, got 23.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:130:        : Padding 25 high bits of the port.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:130: warning: Port 4 (Q) of Pipe_reg_1clk expects 48 bits, got 23.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:130:        : Padding 25 high bits of the port.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:131: warning: Port 4 (Q) of Pipe_reg_1clk expects 48 bits, got 1.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:131:        : Padding 47 high bits of the port.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:132: warning: Port 1 (D) of Pipe_reg_1clk expects 48 bits, got 23.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:132:        : Padding 25 high bits of the port.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:132: warning: Port 4 (Q) of Pipe_reg_1clk expects 48 bits, got 23.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:132:        : Padding 25 high bits of the port.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:133: warning: Port 4 (Q) of Pipe_reg_1clk expects 48 bits, got 1.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:133:        : Padding 47 high bits of the port.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:135: warning: Port 4 (shift) of barrel_shifter expects 48 bits, got 1.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:135:        : Padding 47 high bits of the port.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:135: warning: Port 5 (SHIFT) of barrel_shifter expects 48 bits, got 49.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:135:        : Padding 1 high bits of the expression.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:142: warning: Port 4 (shift) of barrel_shifter expects 48 bits, got 1.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:142:        : Padding 47 high bits of the port.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:142: warning: Port 5 (SHIFT) of barrel_shifter expects 48 bits, got 49.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:142:        : Padding 1 high bits of the expression.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:150: warning: Port 1 (D) of Pipe_reg_1clk expects 48 bits, got 49.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:150:        : Pruning 1 high bits of the expression.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:151: warning: Port 1 (D) of Pipe_reg_1clk expects 48 bits, got 49.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:151:        : Pruning 1 high bits of the expression.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:220: warning: Port 3 (count) of barrel_shifter expects 8 bits, got 6.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:220:        : Padding 2 high bits of the port.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:250: warning: Port 7 (EXPO_big) of EXPO_SUB expects 1 bits, got 8.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:250:        : Padding 7 high bits of the expression.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:264: error: Net s3_EXPO_big is not defined in this context.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:264: error: Output port expression must support continuous assignment.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:264:      : Port 4 (Q) of Pipe_reg_1clk is connected to s3_EXPO_big
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:266: error: Unable to bind wire/reg/memory `s3_EXPO_big' in `FPU_tb.fpu_tb'
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:266: error: Failed to elaborate port expression.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:266: error: Net s4_EXPO_big is not defined in this context.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:266: error: Output port expression must support continuous assignment.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:266:      : Port 4 (Q) of Pipe_reg_1clk is connected to s4_EXPO_big
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:267: error: Unable to bind wire/reg/memory `s4_EXPO_big' in `FPU_tb.fpu_tb'
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:267: error: Failed to elaborate port expression.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:267: error: Net s5_EXPO_big is not defined in this context.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:267: error: Output port expression must support continuous assignment.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:267:      : Port 4 (Q) of Pipe_reg_1clk is connected to s5_EXPO_big
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:268: error: Unable to bind wire/reg/memory `s5_EXPO_big' in `FPU_tb.fpu_tb'
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:268: error: Failed to elaborate port expression.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:268: error: Net s6_EXPO_big is not defined in this context.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:268: error: Output port expression must support continuous assignment.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:268:      : Port 4 (Q) of Pipe_reg_1clk is connected to s6_EXPO_big
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:269: error: Unable to bind wire/reg/memory `s6_EXPO_big' in `FPU_tb.fpu_tb'
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:269: error: Failed to elaborate port expression.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:269: error: Net s7_EXPO_big is not defined in this context.
+ of Pipe_reg_1clk is connected to s8_EXPO_big
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:273: error: Unable to bind wire/reg/memory `s8_EXPO_big' in `FPU_tb.fpu_tb'
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:272: warning: Port 1 (EXPO_in) of EXPO_CAL expects 9 bits, got 1.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:272:        : Padding 8 high bits of the port.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:283: warning: Port 2 (count) of EXPO_CAL expects 6 bits, got 1.
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v:283:        : Padding 5 high bits of the port.
+23 error(s) during elaboration.
+
+<SOLV>
+1.
+
+
+

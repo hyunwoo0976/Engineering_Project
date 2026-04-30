@@ -10,6 +10,7 @@ module FPU_tb #(parameter W=32);
     initial begin
         $dumpfile("FPU.vcd");
         $dumpvars(0,FPU_tb);
+        $monitor("Time: %0t ns | Reset: %b | IN_a: %h | IN_b: %h || OUT: %h | OF: %b | UF: %b", $time, reset, IN_a, IN_b, result_out, OF, UF);
     end
 
     FPU #(.W(32))fpu_tb(
