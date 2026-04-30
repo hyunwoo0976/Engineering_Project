@@ -2,10 +2,10 @@
 ./verilog/Project10_mini_CPU/src_mini_CPU/CLA.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/comparator.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/Cond_Inverter.v
-./verilog/Project10_mini_CPU/src_mini_CPU/Exception_Handler.v
+./verilog/Project10_mini_CPU/src_mini_CPU/Exception_Handler_ADD.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/EXPO_CAL.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/EXPO_SUB.v
-./verilog/Project10_mini_CPU/src_mini_CPU/FPU_ADD_unpack.v
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU_unpack.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/FPU_ADD.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/LZD.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/Magnitude_Restoration.v

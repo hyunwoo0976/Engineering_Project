@@ -1,0 +1,10 @@
+./verilog/Project10_mini_CPU/src_mini_CPU/Exception_Handler.v
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU_unpack.v
+./verilog/Project10_mini_CPU/src_mini_CPU/MUL_EXPO_ADD.v
+./verilog/Project10_mini_CPU/src_mini_CPU/MUL_EXPO.v
+./verilog/Project10_mini_CPU/src_mini_CPU/MUL_SIGN.v
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU_MUL.v
+./verilog/Project10_mini_CPU/src_mini_CPU/Multiplier.v
+./verilog/Project10_mini_CPU/src_mini_CPU/Normalization_MUL.v
+./verilog/Project10_mini_CPU/src_mini_CPU/Pipe_reg_1clk.v
+./verilog/Project10_mini_CPU/tb/FPU_MUL_tb.v

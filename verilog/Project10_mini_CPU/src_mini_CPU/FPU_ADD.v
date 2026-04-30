@@ -119,14 +119,14 @@ module FPU_ADD #(parameter W=32)(
     Pipe_reg_1clk #(.W(32))reg0_A_s0_s1(.clk(clk), .reset(reset), .D(IN_a), .Q(s1_IN_A));
     Pipe_reg_1clk #(.W(32))reg0_B_s0_s1(.clk(clk), .reset(reset),.D(IN_b), .Q(s1_IN_B));
 
-    FPU_ADD_unpack #(.W(32))unpack_A_s1(
+    FPU_unpack #(.W(32))unpack_A_s1(
         .IN(s1_IN_A),
         .SIGN(s1_SIGN_A),
         .EXPO(s1_EXPO_A),
         .FRAC(s1_FRAC_A)
     );
 
-    FPU_ADD_unpack #(.W(32))unpack_B_s1(
+    FPU_unpack #(.W(32))unpack_B_s1(
         .IN(s1_IN_B),
         .SIGN(s1_SIGN_B),
         .EXPO(s1_EXPO_B),
@@ -328,7 +328,7 @@ module FPU_ADD #(parameter W=32)(
     
     //=============================================================================================
 
-    Exception_Handler s11_final(
+    Exception_Handler_ADD s11_final(
         .SIGN(s11_final_SIGN),
         .EXPO(s11_final_EXPO),
         .FRAC(s11_final_FRAC),
