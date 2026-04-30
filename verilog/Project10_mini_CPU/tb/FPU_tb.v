@@ -39,7 +39,7 @@ module FPU_tb #(parameter W=32);
         IN_b=32'h40200000; //2.5
         mode=0;
 
-        #80;
+        #160;
         $finish;
     end
 
