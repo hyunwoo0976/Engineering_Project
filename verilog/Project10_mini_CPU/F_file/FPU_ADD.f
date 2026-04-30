@@ -5,8 +5,8 @@
 ./verilog/Project10_mini_CPU/src_mini_CPU/Exception_Handler.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/EXPO_CAL.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/EXPO_SUB.v
-./verilog/Project10_mini_CPU/src_mini_CPU/FPU_unpack.v
-./verilog/Project10_mini_CPU/src_mini_CPU/FPU.v
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU_ADD_unpack.v
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU_ADD.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/LZD.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/Magnitude_Restoration.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/Mode_Detector.v
@@ -14,4 +14,4 @@
 ./verilog/Project10_mini_CPU/src_mini_CPU/Pipe_reg_1clk.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/Rounding.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/SIGN.v
-./verilog/Project10_mini_CPU/tb/FPU_tb.v
+./verilog/Project10_mini_CPU/tb/FPU_ADD_tb.v

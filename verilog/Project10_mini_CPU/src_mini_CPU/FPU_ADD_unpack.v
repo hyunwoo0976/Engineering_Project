@@ -1,4 +1,4 @@
-module FPU_unpack #(parameter W=32)(
+module FPU_ADD_unpack #(parameter W=32)(
     input [W-1:0]IN,
     output SIGN,
     output [7:0]EXPO,

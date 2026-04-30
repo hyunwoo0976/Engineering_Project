@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-module FPU_tb #(parameter W=32);
+module FPU_ADD_tb #(parameter W=32);
     reg [W-1:0]IN_a,IN_b;
     reg mode,clk,reset;
     wire error,OF,UF;
@@ -8,12 +8,12 @@ module FPU_tb #(parameter W=32);
     always #5 clk=~clk;
 
     initial begin
-        $dumpfile("FPU.vcd");
-        $dumpvars(0,FPU_tb);
+        $dumpfile("FPU_ADD.vcd");
+        $dumpvars(0,FPU_ADD_tb);
         $monitor("Time: %0t ns | Reset: %b | IN_a: %h | IN_b: %h || OUT: %h | OF: %b | UF: %b", $time, reset, IN_a, IN_b, result_out, OF, UF);
     end
 
-    FPU #(.W(32))fpu_tb(
+    FPU_ADD #(.W(32))fpu_tb(
         .IN_a(IN_a),
         .IN_b(IN_b),
         .mode(mode),
