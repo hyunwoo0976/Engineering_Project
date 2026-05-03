@@ -1,6 +1,7 @@
 module Normalization_Controller#(parameter W=32)(
     input [W-1:0]Sum,
     input Cout,
+    input eff_sub,
     output reg [7:0]count,
     output reg direction,doing,
     output [W:0]nor_FRAC
@@ -12,27 +13,36 @@ module Normalization_Controller#(parameter W=32)(
 
     LZD #(.W(W))lzd(
         .Sum(Sum),
-        .Cout(Cout),
         .count(lzd_count),
         .all_zero(all_zero)
     );
 
     always @(*)begin
-        if(all_zero)begin
-            count=0;
-            direction=0;
-            doing=0;
+        count=0;
+        direction=0;
+        doing=0;
+        if(eff_sub)begin
+            if(all_zero)begin
+                doing=0;
+                direction=0;
+                count=0;
+            end
+            else begin
+                count={2'b0, lzd_count};
+                direction=0;
+                doing=1;
+            end
         end
         else begin
             if(Cout)begin
-                count=1;
+                count=8'd1;
                 direction=1;
                 doing=1;
             end
             else begin
-                count=lzd_count;
+                doing=0;
                 direction=0;
-                doing=1;
+                count=0;
             end
         end
     end

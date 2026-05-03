@@ -1,21 +1,9 @@
-module Magnitude_Restoration #(parameter W=32)(
-    input [W-1:0]Sum,
+module Magnitude_Restoration #(parameter W=48)(
+    input [W-1:0]Sum_1,Sum_2,
+    input cout_1,
     input eff_sub,
-    input Cout,
-    output reg [W-1:0]SUM
+    output [W-1:0]SUM
 );
-    always@(*)begin
-        if(eff_sub==1'b1)begin
-            if(Cout==1'b0)begin
-                SUM=~Sum+1'b1;
-            end
-            else begin
-                SUM=Sum;
-            end
-        end
-        else begin
-            SUM=Sum;
-        end
-    end
+    assign SUM=(cout_1==1'b1)?Sum_1:Sum_2;
 endmodule
 

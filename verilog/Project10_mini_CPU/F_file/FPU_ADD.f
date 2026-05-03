@@ -4,6 +4,7 @@
 ./verilog/Project10_mini_CPU/src_mini_CPU/Cond_Inverter.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/Exception_Handler_ADD.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/EXPO_CAL.v
+./verilog/Project10_mini_CPU/src_mini_CPU/EXPO_MUX.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/EXPO_SUB.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/FPU_unpack.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/FPU_ADD.v
