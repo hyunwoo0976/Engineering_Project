@@ -1,22 +1,19 @@
 `default_nettype none
-module FPU_ADD #(parameter W=32)(
-    input [W-1:0]IN_a,IN_b,
-    input mode,clk,reset,
-    output error,OF,UF,
-    output [W-1:0]result_out
+module FADD_core #(parameter W=32)(
+    input wire s1_SIGN_A,s1_SIGN_B,
+    input wire [7:0]s1_EXPO_A,s1_EXPO_B,
+    input wire [22:0]s1_FRAC_A,s1_FRAC_B,
+    input wire clk,reset,
+    input [1:0]op
+    output wire s6_error,s6_OF,s6_UF,
+    output wire [W-1:0]s6_ADD_out
 );
 
     // ====== [Stage 1] ========================================================================
-    wire [31:0]s1_IN_A, s1_IN_B;
-
     wire s1_mode, s1_EXPO_direction, s1_EXPO_doing_A, s1_EXPO_doing_B, s1_bigger;
     wire [7:0]s1_EXPO_count;
     wire [7:0]s1_EXPO_big;
-
-    wire s1_SIGN_A, s1_SIGN_B;
-    wire [7:0]s1_EXPO_A, s1_EXPO_B;
-    wire [22:0]s1_FRAC_A, s1_FRAC_B;
-
+    wire s1_op=op;
     // ====== [Stage 2] ========================================================================
     wire [47:0]s2_FRAC_A, s2_FRAC_B, s2_FRAC_shifted_A, s2_FRAC_shifted_B, s2_FRAC_cond_A, s2_FRAC_cond_B;
 
@@ -24,12 +21,14 @@ module FPU_ADD #(parameter W=32)(
 
     wire s2_SIGN_A, s2_SIGN_B;
     wire s2_EXPO_direction, s2_EXPO_doing_A, s2_EXPO_doing_B, s2_mode, s2_eff_sub, s2_bigger, s2_final_SIGN;
+    wire s2_op;
     // ====== [Stage 3] ========================================================================
     wire [47:0]s3_FRAC_A, s3_FRAC_B, s3_FRAC_shifted_A, s3_FRAC_shifted_B, s3_FRAC_Sum1, s3_FRAC_Sum2, s3_FRAC_SUM;
 
     wire [7:0]s3_EXPO_big;
 
     wire s3_eff_sub, s3_FRAC_Cout1, s3_final_SIGN;
+    wire s3_op;
     // ====== [Stage 4] ========================================================================
     wire [48:0]s4_FRAC_nor_FRAC;
     wire [47:0]s4_FRAC_Sum;
@@ -37,7 +36,7 @@ module FPU_ADD #(parameter W=32)(
     wire [7:0]s4_EXPO_big, s4_FRAC_nor_count;
 
     wire s4_FRAC_Cout, s4_FRAC_nor_direction, s4_FRAC_nor_doing, s4_final_SIGN;
-
+    wire s4_op;
     // ====== [Stage 5] ========================================================================
     wire [48:0]s5_FRAC_nor_FRAC, s5_FRAC_shifted;
     wire [8:0]s5_EXPO;
@@ -45,7 +44,7 @@ module FPU_ADD #(parameter W=32)(
     wire [7:0]s5_EXPO_big;
 
     wire s5_FRAC_nor_direction, s5_FRAC_nor_doing, s5_final_SIGN;
-
+    wire s5_op;
     // ====== [Stage 6] ========================================================================
     wire [47:0]s6_FRAC_shifted;
 
@@ -55,26 +54,10 @@ module FPU_ADD #(parameter W=32)(
 
     wire [8:0]s6_EXPO, s6_final_EXPO;
 
-    wire s6_Rounding_count, s6_final_SIGN, s6_OF, s6_UF, s6_error;
+    wire s6_Rounding_count, s6_final_SIGN;
 
+    wire s6_op;
     // ================= ========================================================================
-    Pipe_reg_1clk #(.W(32))reg0_A_s0_s1(.clk(clk), .reset(reset), .D(IN_a), .Q(s1_IN_A));
-    Pipe_reg_1clk #(.W(32))reg0_B_s0_s1(.clk(clk), .reset(reset),.D(IN_b), .Q(s1_IN_B));
-
-    FPU_unpack #(.W(32))unpack_A_s1(
-        .IN(s1_IN_A),
-        .SIGN(s1_SIGN_A),
-        .EXPO(s1_EXPO_A),
-        .FRAC(s1_FRAC_A)
-    );
-
-    FPU_unpack #(.W(32))unpack_B_s1(
-        .IN(s1_IN_B),
-        .SIGN(s1_SIGN_B),
-        .EXPO(s1_EXPO_B),
-        .FRAC(s1_FRAC_B)
-    );
-
     Pipe_reg_1clk #(.W(48)) reg1_FRAC_A_s1_s2(.clk(clk), .reset(reset), .D({1'b1,s1_FRAC_A,24'b0}), .Q(s2_FRAC_A));
     Pipe_reg_1clk #(.W(48)) reg1_FRAC_B_s1_s2(.clk(clk), .reset(reset), .D({1'b1,s1_FRAC_B,24'b0}), .Q(s2_FRAC_B));
 
@@ -96,13 +79,13 @@ module FPU_ADD #(parameter W=32)(
     Pipe_reg_1clk #(.W(1)) reg1_SIGN_A_s1_s2(.clk(clk), .reset(reset), .D(s1_SIGN_A), .Q(s2_SIGN_A));
     Pipe_reg_1clk #(.W(1)) reg1_SIGN_B_s1_s2(.clk(clk), .reset(reset), .D(s1_SIGN_B), .Q(s2_SIGN_B));
     
-    Pipe_reg_1clk #(.W(1))reg0_mode_s0_s1(.clk(clk), .reset(reset), .D(mode), .Q(s1_mode));
-    Pipe_reg_1clk #(.W(1))reg1_mode_s1_s2(.clk(clk), .reset(reset), .D(s1_mode), .Q(s2_mode));
+    Pipe_reg_1clk #(.W(1))reg0_mode_s0_s1(.clk(clk), .reset(reset), .D(op[0]), .Q(s1_op));
+    Pipe_reg_1clk #(.W(1))reg1_mode_s1_s2(.clk(clk), .reset(reset), .D(s1_op), .Q(s2_op));
 
     Mode_Detector mode_dec_s2(
         .sign_A(s2_SIGN_A),
         .sign_B(s2_SIGN_B),
-        .mode(s2_mode),
+        .mode(s2_op),
         .eff_sub(s2_eff_sub)
     );
     Cond_Inverter #(.W(48))co_inAB_s2(
@@ -231,7 +214,7 @@ module FPU_ADD #(parameter W=32)(
     SIGN fin_sign(
         .SIGN_A(s2_SIGN_A),
         .SIGN_B(s2_SIGN_B),
-        .mode(s2_mode),
+        .mode(s2_op),
         .bigger(s2_bigger),
         .result_SIGN(s2_final_SIGN)
     );
@@ -249,12 +232,8 @@ module FPU_ADD #(parameter W=32)(
         .FRAC(s6_final_FRAC),
         .overflow_flag(s6_OF),
         .underflow_flag(s6_UF),
-        .final_result(s6_result_out)
+        .final_result(s6_ADD_out)
     );
-    Pipe_reg_1clk#(.W(1)) reg6_OF(.clk(clk), .reset(reset), .D(s6_OF), .Q(OF));
-    Pipe_reg_1clk#(.W(1)) reg6_UF(.clk(clk), .reset(reset), .D(s6_UF), .Q(UF));
-    Pipe_reg_1clk#(.W(1)) reg6_error(.clk(clk), .reset(reset), .D(s6_error), .Q(error));
-    Pipe_reg_1clk#(.W(32)) reg6_result_out(.clk(clk), .reset(reset), .D(s6_result_out), .Q(result_out));
 
 endmodule
 `default_nettype wire

@@ -1,0 +1,564 @@
+$date
+	Sun May 03 23:52:25 2026
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ps
+$end
+$scope module FPU_MUL_tb $end
+$var wire 32 ! result_out [31:0] $end
+$var wire 1 " UF $end
+$var wire 1 # OF $end
+$var reg 32 $ IN_A [31:0] $end
+$var reg 32 % IN_B [31:0] $end
+$var reg 1 & clk $end
+$var reg 1 ' reset $end
+$scope module fmul $end
+$var wire 32 ( IN_A [31:0] $end
+$var wire 32 ) IN_B [31:0] $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var wire 32 * s6_result_out [31:0] $end
+$var wire 1 + s6_UF $end
+$var wire 1 , s6_SIGN $end
+$var wire 1 - s6_OF $end
+$var wire 23 . s6_FRAC [22:0] $end
+$var wire 8 / s6_EXPO [7:0] $end
+$var wire 1 0 s5_round_carry $end
+$var wire 1 1 s5_count $end
+$var wire 1 2 s5_UF $end
+$var wire 1 3 s5_SIGN $end
+$var wire 1 4 s5_OF $end
+$var wire 23 5 s5_FRAC [22:0] $end
+$var wire 8 6 s5_EXPO [7:0] $end
+$var wire 1 7 s4_round_carry $end
+$var wire 1 8 s4_count $end
+$var wire 1 9 s4_UF $end
+$var wire 1 : s4_SIGN $end
+$var wire 1 ; s4_OF $end
+$var wire 48 < s4_FRAC_mul [47:0] $end
+$var wire 23 = s4_FRAC [22:0] $end
+$var wire 9 > s4_EXPO_ADD [8:0] $end
+$var wire 8 ? s4_EXPO [7:0] $end
+$var wire 1 @ s3_SIGN $end
+$var wire 48 A s3_FRAC_mul [47:0] $end
+$var wire 9 B s3_EXPO_ADD [8:0] $end
+$var wire 1 C s2_SIGN_B $end
+$var wire 1 D s2_SIGN_A $end
+$var wire 1 E s2_SIGN $end
+$var wire 48 F s2_FRAC_mul [47:0] $end
+$var wire 23 G s2_FRAC_B [22:0] $end
+$var wire 23 H s2_FRAC_A [22:0] $end
+$var wire 8 I s2_EXPO_B [7:0] $end
+$var wire 9 J s2_EXPO_ADD [8:0] $end
+$var wire 8 K s2_EXPO_A [7:0] $end
+$var wire 1 L s1_SIGN_B $end
+$var wire 1 M s1_SIGN_A $end
+$var wire 32 N s1_IN_B [31:0] $end
+$var wire 32 O s1_IN_A [31:0] $end
+$var wire 23 P s1_FRAC_B [22:0] $end
+$var wire 23 Q s1_FRAC_A [22:0] $end
+$var wire 8 R s1_EXPO_B [7:0] $end
+$var wire 8 S s1_EXPO_A [7:0] $end
+$var wire 32 T result_out [31:0] $end
+$var wire 1 " UF $end
+$var wire 1 # OF $end
+$scope module expo_add $end
+$var wire 8 U EXPO_B [7:0] $end
+$var wire 9 V EXPO_ADD [8:0] $end
+$var wire 8 W EXPO_A [7:0] $end
+$upscope $end
+$scope module frac_mul $end
+$var wire 24 X FRAC_A [23:0] $end
+$var wire 24 Y FRAC_B [23:0] $end
+$var wire 48 Z FRAC_mul [47:0] $end
+$upscope $end
+$scope module mul_expo $end
+$var wire 1 7 round_carry $end
+$var wire 1 8 count $end
+$var wire 1 9 UF $end
+$var wire 1 ; OF $end
+$var wire 10 [ EXPO_etc [9:0] $end
+$var wire 9 \ EXPO_ADD [8:0] $end
+$var reg 8 ] EXPO [7:0] $end
+$upscope $end
+$scope module reg2_FRAC_mul_s2_s3 $end
+$var wire 48 ^ D [47:0] $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var reg 48 _ Q [47:0] $end
+$upscope $end
+$scope module reg3_FRAC_mul_s3_s4 $end
+$var wire 48 ` D [47:0] $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var reg 48 a Q [47:0] $end
+$upscope $end
+$scope module reg4_EXPO_s4_s5 $end
+$var wire 8 b D [7:0] $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var reg 8 c Q [7:0] $end
+$upscope $end
+$scope module reg4_FRAC_s4_s5 $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var wire 23 d D [22:0] $end
+$var reg 23 e Q [22:0] $end
+$upscope $end
+$scope module reg4_OF_s4_s5 $end
+$var wire 1 ; D $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var reg 1 4 Q $end
+$upscope $end
+$scope module reg4_UF_s4_s5 $end
+$var wire 1 9 D $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var reg 1 2 Q $end
+$upscope $end
+$scope module reg4_count_s3_s4 $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var wire 1 8 D $end
+$var reg 1 1 Q $end
+$upscope $end
+$scope module reg4_round_carry_s3_s4 $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var wire 1 7 D $end
+$var reg 1 0 Q $end
+$upscope $end
+$scope module reg5_EXPO_s5_s6 $end
+$var wire 8 f D [7:0] $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var reg 8 g Q [7:0] $end
+$upscope $end
+$scope module reg5_FRAC_s5_s6 $end
+$var wire 23 h D [22:0] $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var reg 23 i Q [22:0] $end
+$upscope $end
+$scope module reg5_OF_s5_s6 $end
+$var wire 1 4 D $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var reg 1 - Q $end
+$upscope $end
+$scope module reg5_UF_s5_s6 $end
+$var wire 1 2 D $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var reg 1 + Q $end
+$upscope $end
+$scope module reg6_OF $end
+$var wire 1 - D $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var reg 1 # Q $end
+$upscope $end
+$scope module reg6_UF $end
+$var wire 1 + D $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var reg 1 " Q $end
+$upscope $end
+$scope module reg6_result_out $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var wire 32 j D [31:0] $end
+$var reg 32 k Q [31:0] $end
+$upscope $end
+$scope module reg_EXPO_ADD_s2_s3 $end
+$var wire 9 l D [8:0] $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var reg 9 m Q [8:0] $end
+$upscope $end
+$scope module reg_EXPO_ADD_s3_s4 $end
+$var wire 9 n D [8:0] $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var reg 9 o Q [8:0] $end
+$upscope $end
+$scope module reg_EXPO_A_s1_s2 $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var wire 8 p D [7:0] $end
+$var reg 8 q Q [7:0] $end
+$upscope $end
+$scope module reg_EXPO_B_s1_s2 $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var wire 8 r D [7:0] $end
+$var reg 8 s Q [7:0] $end
+$upscope $end
+$scope module reg_FRAC_A_s1_s2 $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var wire 23 t D [22:0] $end
+$var reg 23 u Q [22:0] $end
+$upscope $end
+$scope module reg_FRAC_B_s1_s2 $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var wire 23 v D [22:0] $end
+$var reg 23 w Q [22:0] $end
+$upscope $end
+$scope module reg_IN_A_s0_s1 $end
+$var wire 32 x D [31:0] $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var reg 32 y Q [31:0] $end
+$upscope $end
+$scope module reg_IN_B_s0_s1 $end
+$var wire 32 z D [31:0] $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var reg 32 { Q [31:0] $end
+$upscope $end
+$scope module reg_SIGN_A_s1_s2 $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var wire 1 M D $end
+$var reg 1 D Q $end
+$upscope $end
+$scope module reg_SIGN_B_s1_s2 $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var wire 1 L D $end
+$var reg 1 C Q $end
+$upscope $end
+$scope module reg_SIGN_s2_s3 $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var wire 1 E D $end
+$var reg 1 @ Q $end
+$upscope $end
+$scope module reg_SIGN_s3_s4 $end
+$var wire 1 @ D $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var reg 1 : Q $end
+$upscope $end
+$scope module reg_SIGN_s4_s5 $end
+$var wire 1 : D $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var reg 1 3 Q $end
+$upscope $end
+$scope module reg_SIGN_s5_s6 $end
+$var wire 1 3 D $end
+$var wire 1 & clk $end
+$var wire 1 ' reset $end
+$var reg 1 , Q $end
+$upscope $end
+$scope module s4_frac_nor $end
+$var wire 48 | FRAC_mul [47:0] $end
+$var wire 1 } round_up $end
+$var wire 24 ~ rounded_FRAC [23:0] $end
+$var wire 1 7 round_carry $end
+$var wire 23 !" FRAC_out [22:0] $end
+$var reg 23 "" FRAC_etc [22:0] $end
+$var reg 1 #" G $end
+$var reg 1 $" L $end
+$var reg 1 %" S $end
+$var reg 1 8 count $end
+$upscope $end
+$scope module s6_final $end
+$var wire 8 &" EXPO [7:0] $end
+$var wire 23 '" FRAC [22:0] $end
+$var wire 1 , SIGN $end
+$var wire 32 (" result_out [31:0] $end
+$upscope $end
+$scope module sign_cal $end
+$var wire 1 E SIGN $end
+$var wire 1 D SIGN_A $end
+$var wire 1 C SIGN_B $end
+$upscope $end
+$scope module unpack_A_s1 $end
+$var wire 32 )" IN [31:0] $end
+$var wire 1 M SIGN $end
+$var wire 23 *" FRAC [22:0] $end
+$var wire 8 +" EXPO [7:0] $end
+$upscope $end
+$scope module unpack_B_s1 $end
+$var wire 32 ," IN [31:0] $end
+$var wire 1 L SIGN $end
+$var wire 23 -" FRAC [22:0] $end
+$var wire 8 ." EXPO [7:0] $end
+$upscope $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+#0
+$dumpvars
+b0 ."
+b0 -"
+b0 ,"
+b0 +"
+b0 *"
+b0 )"
+b0 ("
+b0 '"
+b0 &"
+0%"
+0$"
+0#"
+b0 ""
+b0 !"
+b0 ~
+0}
+b0 |
+b0 {
+b0 z
+b0 y
+b0 x
+b0 w
+b0 v
+b0 u
+b0 t
+b0 s
+b0 r
+b0 q
+b0 p
+b0 o
+b0 n
+b0 m
+b0 l
+b0 k
+b0 j
+b0 i
+b0 h
+b0 g
+b0 f
+b0 e
+b0 d
+b0 c
+b0 b
+b0 a
+b0 `
+b0 _
+b10000000000000000000000000000000000000000000000 ^
+b0 ]
+b0 \
+b1110000001 [
+b10000000000000000000000000000000000000000000000 Z
+b100000000000000000000000 Y
+b100000000000000000000000 X
+b0 W
+b0 V
+b0 U
+b0 T
+b0 S
+b0 R
+b0 Q
+b0 P
+b0 O
+b0 N
+0M
+0L
+b0 K
+b0 J
+b0 I
+b0 H
+b0 G
+b10000000000000000000000000000000000000000000000 F
+0E
+0D
+0C
+b0 B
+b0 A
+0@
+b0 ?
+b0 >
+b0 =
+b0 <
+0;
+0:
+19
+08
+07
+b0 6
+b0 5
+04
+03
+02
+01
+00
+b0 /
+b0 .
+0-
+0,
+0+
+b0 *
+b0 )
+b0 (
+1'
+0&
+b0 %
+b0 $
+0#
+0"
+b0 !
+$end
+#5000
+1&
+#10000
+0&
+#11000
+b1000000000000000000000000000000 %
+b1000000000000000000000000000000 )
+b1000000000000000000000000000000 z
+b111111110000000000000000000000 $
+b111111110000000000000000000000 (
+b111111110000000000000000000000 x
+0'
+#15000
+b1111111 S
+b1111111 p
+b1111111 +"
+b10000000000000000000000 Q
+b10000000000000000000000 t
+b10000000000000000000000 *"
+b10000000 R
+b10000000 r
+b10000000 ."
+b111111110000000000000000000000 O
+b111111110000000000000000000000 y
+b111111110000000000000000000000 )"
+b1000000000000000000000000000000 N
+b1000000000000000000000000000000 {
+b1000000000000000000000000000000 ,"
+12
+b10000000000000000000000000000000000000000000000 A
+b10000000000000000000000000000000000000000000000 _
+b10000000000000000000000000000000000000000000000 `
+1&
+#20000
+0&
+#25000
+b10000000000000000000000000000000000000000000000 <
+b10000000000000000000000000000000000000000000000 a
+b10000000000000000000000000000000000000000000000 |
+b11000000000000000000000000000000000000000000000 F
+b11000000000000000000000000000000000000000000000 Z
+b11000000000000000000000000000000000000000000000 ^
+b110000000000000000000000 X
+b10000000000000000000000 H
+b10000000000000000000000 u
+1+
+b10000000 I
+b10000000 U
+b10000000 s
+b11111111 J
+b11111111 V
+b11111111 l
+b1111111 K
+b1111111 W
+b1111111 q
+1&
+#30000
+0&
+#35000
+b11111111 B
+b11111111 m
+b11111111 n
+b11000000000000000000000000000000000000000000000 A
+b11000000000000000000000000000000000000000000000 _
+b11000000000000000000000000000000000000000000000 `
+1"
+1&
+#40000
+0&
+#45000
+b10000000 ?
+b10000000 ]
+b10000000 b
+09
+b10000000000000000000000 =
+b10000000000000000000000 d
+b10000000000000000000000 !"
+b10000000000000000000000 ~
+b10000000000000000000000 ""
+b11000000000000000000000000000000000000000000000 <
+b11000000000000000000000000000000000000000000000 a
+b11000000000000000000000000000000000000000000000 |
+b10000000 [
+b11111111 >
+b11111111 \
+b11111111 o
+1&
+#50000
+0&
+#55000
+b10000000 6
+b10000000 c
+b10000000 f
+02
+b10000000000000000000000 5
+b10000000000000000000000 e
+b10000000000000000000000 h
+1&
+#60000
+0&
+#65000
+b10000000000000000000000 .
+b10000000000000000000000 i
+b10000000000000000000000 '"
+0+
+b1000000010000000000000000000000 *
+b1000000010000000000000000000000 j
+b1000000010000000000000000000000 ("
+b10000000 /
+b10000000 g
+b10000000 &"
+1&
+#70000
+0&
+#75000
+0"
+b1000000010000000000000000000000 !
+b1000000010000000000000000000000 T
+b1000000010000000000000000000000 k
+1&
+#80000
+0&
+#85000
+1&
+#90000
+0&
+#95000
+1&
+#100000
+0&
+#105000
+1&
+#110000
+0&
+#115000
+1&
+#120000
+0&
+#125000
+1&
+#130000
+0&
+#135000
+1&
+#140000
+0&
+#145000
+1&
+#150000
+0&
+#155000
+1&
+#160000
+0&
+#161000
