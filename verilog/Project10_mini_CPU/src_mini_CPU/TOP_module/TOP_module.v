@@ -16,7 +16,7 @@ module Top_module #(parameter W=32)(
 
     wire OF_ADD,OF_MUL,UF_ADD,UF_MUL,error_ADD;
     wire s6_OF, s6_UF, s6_error;
-    wire [1:0]s1_op, s2_op, s3_op, s4_op, s5_op, s6_op;
+    wire s1_op, s2_op, s3_op, s4_op, s5_op, s6_op;
 
 
     Pipe_reg_1clk #(.W(32)) reg0_IN_A(.clk(clk), .reset(reset), .D(IN_A), .Q(s1_IN_A));

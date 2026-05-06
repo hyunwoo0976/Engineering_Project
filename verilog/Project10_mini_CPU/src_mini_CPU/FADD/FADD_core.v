@@ -4,7 +4,7 @@ module FADD_core #(parameter W=32)(
     input wire [7:0]s1_EXPO_A,s1_EXPO_B,
     input wire [22:0]s1_FRAC_A,s1_FRAC_B,
     input wire clk,reset,
-    input [1:0]op
+    input [1:0]op,
     output wire s6_error,s6_OF,s6_UF,
     output wire [W-1:0]s6_ADD_out
 );

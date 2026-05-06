@@ -1,9 +1,14 @@
+`timescale 1ns/1ps
 module Top_module_tb #(parameter W=32);
     reg clk, reset;
     reg [1:0]op;
     reg [W-1:0]IN_A,IN_B;
     wire [W-1:0]result_out;
     wire error,OF,UF;
+
+    reg rand_SIGN;
+    reg [7:0]rand_EXPO;
+    reg [22:0]rand_FRAC;
 
     always #5 clk=~clk;
 
@@ -13,10 +18,20 @@ module Top_module_tb #(parameter W=32);
 
         $monitor("Time: %0t ns | Reset: %b | OP:%b | IN_a: %h | IN_b: %h || OUT: %h | OF: %b | UF: %b | error:%b", $time, reset, op, IN_A, IN_B, result_out, OF, UF, error);
     end
+
+    Top_module #(.W(32))top_module(
+        .clk(clk),
+        .reset(reset),
+        .op(op),
+        .IN_A(IN_A),
+        .IN_B(IN_B),
+        .result_out(result_out),
+        .error(error),
+        .OF(OF),
+        .UF(UF)
+    );
+
     integer i;
-    reg rand_SIGN;
-    reg [7:0]rand_EXPO;
-    reg [22:0]rand_FRAC;
 
     initial begin
         clk=0;
