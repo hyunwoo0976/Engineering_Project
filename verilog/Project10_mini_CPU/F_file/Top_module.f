@@ -6,13 +6,14 @@
 ./verilog/Project10_mini_CPU/src_mini_CPU/FADD/EXPO_CAL.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/FADD/EXPO_MUX.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/FADD/EXPO_SUB.v
-./verilog/Project10_mini_CPU/src_mini_CPU/common/FPU_unpack.v
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU_common/FPU_unpack.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/FADD/FADD_core.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/FADD/LZD.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/FADD/Magnitude_Restoration.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/FADD/Mode_Detector.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/FADD/Normalization_Controller.v
-./verilog/Project10_mini_CPU/src_mini_CPU/common/Pipe_reg_1clk.v
+./verilog/Project10_mini_CPU/src_mini_CPU/Register/Pipe_reg_1clk.v
+./verilog/Project10_mini_CPU/src_mini_CPU/Register/Pipe_reg_1clk_en.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/FADD/Rounding.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/FADD/SIGN.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/FMUL/Exception_Handler.v
@@ -22,6 +23,6 @@
 ./verilog/Project10_mini_CPU/src_mini_CPU/FMUL/FMUL_core.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/FMUL/Multiplier.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/FMUL/Normalization_MUL.v
-./verilog/Project10_mini_CPU/src_mini_CPU/common/MUX.v
+./verilog/Project10_mini_CPU/src_mini_CPU/FPU_common/MUX.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/Top_module/Top_module.v
 ./verilog/Project10_mini_CPU/tb/Top_module_tb.v

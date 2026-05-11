@@ -1,11 +1,14 @@
 module Top_module #(parameter W=32)(
     input [W-1:0]IN_A,IN_B,
     input [1:0]op,
+    input FPU_en,
     input clk,reset,
     output [W-1:0]result_out,
     output error,OF,UF
 );
     wire [31:0]s1_IN_A,s1_IN_B;
+    
+    wire s1_en;
     
     wire s1_SIGN_A,s1_SIGN_B;
     wire [7:0]s1_EXPO_A,s1_EXPO_B;
@@ -19,17 +22,23 @@ module Top_module #(parameter W=32)(
     wire s1_op, s2_op, s3_op, s4_op, s5_op, s6_op;
 
 
+
     Pipe_reg_1clk #(.W(32)) reg0_IN_A(.clk(clk), .reset(reset), .D(IN_A), .Q(s1_IN_A));
     Pipe_reg_1clk #(.W(32)) reg0_IN_B(.clk(clk), .reset(reset), .D(IN_B), .Q(s1_IN_B));
 
+    Pipe_reg_1clk #(.W(1)) reg0_FPU_en(.clk(clk), .reset(reset), .D(FPU_en), .Q(s1_en));
+
+
     FPU_unpack #(.W(32))unpack_A_s1(
         .IN(s1_IN_A),
+        .FPU_en(s1_en),
         .SIGN(s1_SIGN_A),
         .EXPO(s1_EXPO_A),
         .FRAC(s1_FRAC_A)
     );
     FPU_unpack #(.W(32))unpack_B_s1(
         .IN(s1_IN_B),
+        .FPU_en(s1_en),
         .SIGN(s1_SIGN_B),
         .EXPO(s1_EXPO_B),
         .FRAC(s1_FRAC_B)
@@ -38,6 +47,8 @@ module Top_module #(parameter W=32)(
     FADD_core #(.W(32))FPU_ADD(
         .clk(clk), .reset(reset),
         .s6_ADD_out(ADD_out),
+        .s1_en(s1_en),
+        .op(op),
         .s6_OF(OF_ADD),
         .s6_UF(UF_ADD),
         .s6_error(error_ADD),
@@ -52,6 +63,7 @@ module Top_module #(parameter W=32)(
     FMUL_core #(.W(32))FPU_MUL(
         .clk(clk), .reset(reset),
         .s6_MUL_out(MUL_out),
+        .s1_en(s1_en),
         .s6_OF(OF_MUL),
         .s6_UF(UF_MUL),
         .s1_SIGN_A(s1_SIGN_A),
@@ -88,12 +100,3 @@ module Top_module #(parameter W=32)(
 
     Pipe_reg_1clk #(.W(32)) reg_FINAL_OUT(.clk(clk), .reset(reset), .D(final_out), .Q(result_out));
 endmodule
-
-    
-
-
-    
-
-
-
-    
