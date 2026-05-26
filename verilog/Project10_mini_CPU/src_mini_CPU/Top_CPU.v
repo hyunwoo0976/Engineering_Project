@@ -12,7 +12,7 @@ module Top_CPU #(parameter W=32)(
 //------------------------------[wire]--------------------------------
     wire [31:0]next_pc, pc;
     wire [31:0]instruction;
-    wire RegWrite, MemRead, MemtoReg, MemWrite,Branch, ALUsrc;
+    wire RegWrite, MemRead, MemtoReg, MemWrite,Branch, alusrc;
     wire funct7_bit30;
     wire [2:0]Funct3;
     wire [4:0]Rs1,Rs2,Rd;
@@ -25,7 +25,7 @@ module Top_CPU #(parameter W=32)(
     wire [31:0]Result;
     wire [31:0]read_data;
     wire [31:0]Target;
-    wire PCSrc;
+    wire PCsrc;
     wire [31:0]final_next_pc;
     wire is_BEQ;
     wire ZF, sign;
@@ -43,7 +43,7 @@ module Top_CPU #(parameter W=32)(
     PC_MUX #(.W(W))u_PC_MUX(
         .Target(Target),
         .next_pc(next_pc),
-        .PCSrc(PCSrc),
+        .PCSrc(PCsrc),
         .final_next_pc(final_next_pc)
     );
     PC_Target #(.W(W))u_PC_Target(
@@ -51,10 +51,10 @@ module Top_CPU #(parameter W=32)(
         .imm(imm),
         .Target(Target)
     );
-    PCSrc #(.W(W))u_PCSrc(
+    PCSrc u_PCSrc(
         .ZF(ZF),
         .is_BEQ(is_BEQ),
-        .PCSrc(PCSrc)
+        .PCSrc(PCsrc)
     );
     PC_reg #(.W(W))u_PC_reg(
         .clk(clk),
@@ -79,7 +79,7 @@ module Top_CPU #(parameter W=32)(
         .MemtoReg(MemtoReg),
         .Branch(Branch),
         .MemWrite(MemWrite),
-        .ALUsrc(ALUsrc),
+        .ALUsrc(alusrc),
         .funct7_bit30(funct7_bit30),
         .funct3(Funct3),
         .rs1(Rs1),
@@ -119,8 +119,8 @@ module Top_CPU #(parameter W=32)(
         .ALUOp(ALUOp),
         .ALU_Control(ALU_Control)
     );
-    ALUsrc #(.W(W))u_ALUsrc(
-        .ALUsrc(ALUsrc),
+    ALUsrc_MUX #(.W(W))u_ALUsrc(
+        .ALUsrc(alusrc),
         .Imm(imm),
         .B(B),
         .ALU_in_b(ALU_in_b)

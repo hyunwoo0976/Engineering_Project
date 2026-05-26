@@ -7,14 +7,14 @@ module ALU #(parameter W=32)(
 );
     wire [W-1:0]logic_result, calculate_result, shift_result;
 
-    logical_group #(.W(W)) logic(
+    logical_group #(.W(W))u_Logic(
         .A(A),
         .B(B),
         .ALU_Control(ALU_Control),
         .logic_result(logic_result)
     );
 
-    calculate_group #(.W(W)) Adder(
+    calculate_group #(.W(W)) u_Adder(
         .A(A),
         .B(B),
         .ALU_Control(ALU_Control),
@@ -23,7 +23,7 @@ module ALU #(parameter W=32)(
         .sign(sign)
     );
 
-    shift_group #(.W(W)) shift(
+    shift_group #(.W(W)) u_Shift(
         .A(A),
         .B(B),
         .ALU_Control(ALU_Control),
