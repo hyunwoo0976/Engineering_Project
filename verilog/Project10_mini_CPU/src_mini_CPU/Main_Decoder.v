@@ -1,4 +1,4 @@
-module Decoder #(parameter W=32)(
+module Main_Decoder #(parameter W=32)(
     input [W-1:0]instruction,
     output reg RegWrite,    //save the value to the register file when finished?
     output reg MemWrite,    //write the value to RAM
@@ -7,8 +7,14 @@ module Decoder #(parameter W=32)(
     output reg ALUsrc,      //MUX : Rs2 or IMM as second value
     output reg MemtoReg,    //MUX : select ALU result or Memory data
     output funct7_bit30,//ALU_Control
+    output [2:0]funct3,
+    output [4:0]rs1,rs2,
+    output [4:0]rd,
     output reg [1:0]ALUOp,
-    output reg FPU_en
+    output reg FPU_en,
+    output reg is_LW,is_SW,
+    output reg is_BEQ,is_BNE, is_BLT, is_BGE,
+    output reg is_JAL, is_JALR
 );
     wire [6:0]Funct7=instruction[31:25];
     wire [4:0]Rs2=instruction[24:20];
@@ -25,10 +31,11 @@ module Decoder #(parameter W=32)(
     wire is_FPU= (Opcode == 7'b1010011);
 
     assign funct7_bit30=instruction[30];
+    assign funct3=Funct3;
+    assign rs1=Rs1;
+    assign rs2=Rs2;
+    assign rd=Rd;
 
-    reg is_LW,is_SW;
-    reg is_BEQ,is_BNE, is_BLT, is_BGE;
-    reg is_JAL, is_JALR;
 
 
    
