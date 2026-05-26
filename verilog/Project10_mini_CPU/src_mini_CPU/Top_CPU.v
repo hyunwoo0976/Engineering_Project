@@ -28,6 +28,7 @@ module Top_CPU #(parameter W=32)(
     wire PCSrc;
     wire [31:0]final_next_pc;
     wire is_BEQ;
+    wire ZF, sign;
 //------------------[Stage1: Fetch(IF)]-------------------------------
 //------------------[Stage2: Decode(ID)]------------------------------
 //------------------[Stage3: Execute(EX)]-----------------------------
