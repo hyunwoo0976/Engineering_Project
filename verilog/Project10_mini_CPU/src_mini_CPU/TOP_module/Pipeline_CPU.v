@@ -1,14 +1,14 @@
 `default_nettype none
-module Top_CPU #(parameter W=32)(
+module Pipeline_CPU #(parameter W=32)(
     input clk, reset,
     output [W-1:0]current_pc,
     output [W-1:0]current_inst,
     output [W-1:0]wb_data
 );
 
-    assign current_pc = pc;
-    assign current_inst = instruction;
-    assign wb_data = OUT;
+    assign current_pc = IF_pc;
+    assign current_inst = ID_instruction;
+    assign wb_data = WB_OUT;
 
 //------------------------------[wire]--------------------------------
 //------------------[Stage1: Fetch(IF)]-------------------------------
@@ -18,7 +18,8 @@ module Top_CPU #(parameter W=32)(
     wire [31:0] IF_instruction;
 //------------------[Stage2: Decode(ID)]------------------------------
     wire [31:0] ID_pc;
-    wire ID_RegWrite, ID_MemtoReg, ID_MemRead, ID_MemWrite, ID_ALUsrc;
+    wire [31:0] ID_instruction;
+    wire ID_RegWrite, ID_MemtoReg, ID_MemRead, ID_MemWrite, ID_Branch, ID_ALUsrc;
     wire ID_funct7_bit30;
     wire [2:0] ID_Funct3;
     wire [1:0] ID_ALUOp;
@@ -34,9 +35,11 @@ module Top_CPU #(parameter W=32)(
     wire [3:0] EX_ALU_Control;
     wire EX_is_BEQ;
     wire [31:0] EX_A, EX_B;
+    wire [31:0] EX_ALU_in_b;
     wire [31:0] EX_imm;
     wire [4:0] EX_Rd;
     wire [31:0] EX_Target;
+    wire [31:0] EX_Result;
     wire EX_PCsrc;
     wire EX_ZF, EX_sign;
 
