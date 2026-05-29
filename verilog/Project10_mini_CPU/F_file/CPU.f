@@ -17,5 +17,7 @@
 ./verilog/Project10_mini_CPU/src_mini_CPU/PC/PC_reg.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/PC/PC_Target.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/PC/PCSrc.v
+./verilog/Project10_mini_CPU/src_mini_CPU/Hazard_Unit.v
+./verilog/Project10_mini_CPU/src_mini_CPU/Early_Jump_Unit.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/TOP_module/Pipeline_CPU.v
 ./verilog/Project10_mini_CPU/tb/Pipeline_CPU_tb.v

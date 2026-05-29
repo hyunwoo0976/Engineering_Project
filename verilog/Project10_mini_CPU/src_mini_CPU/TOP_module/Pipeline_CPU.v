@@ -11,6 +11,7 @@ module Pipeline_CPU #(parameter W=32)(
     assign wb_data = WB_OUT;
 
 //------------------------------[wire]--------------------------------
+    wire IF_ID_flush, ID_EX_flush;
 //------------------[Stage1: Fetch(IF)]-------------------------------
     wire [31:0] IF_pc;
     wire [31:0] IF_next_pc;
@@ -24,16 +25,19 @@ module Pipeline_CPU #(parameter W=32)(
     wire [2:0] ID_Funct3;
     wire [1:0] ID_ALUOp;
     wire [3:0] ID_ALU_Control;
-    wire ID_is_BEQ;
+    wire ID_is_BEQ, ID_is_BNE, ID_is_BLT, ID_is_BGE;
+    wire ID_is_JAL;
     wire [31:0] ID_A, ID_B;
     wire [31:0] ID_imm;
     wire [4:0] ID_Rs1, ID_Rs2, ID_Rd;
+    wire ID_PCSrc;
+    wire [31:0]ID_Early_Target;
 
 //------------------[Stage3: Execute(EX)]-----------------------------
     wire [31:0] EX_pc;
     wire EX_RegWrite, EX_MemtoReg, EX_MemRead, EX_MemWrite, EX_ALUsrc;
     wire [3:0] EX_ALU_Control;
-    wire EX_is_BEQ;
+    wire EX_is_BEQ, EX_is_BNE, EX_is_BLT, EX_is_BGE;
     wire [31:0] EX_A, EX_B;
     wire [31:0] EX_ALU_in_b;
     wire [31:0] EX_imm;
@@ -57,13 +61,21 @@ module Pipeline_CPU #(parameter W=32)(
     wire [31:0] WB_read_data;
 
 
-
+//---------------------------------------------------------------
+    Hazard_Unit u_Hazard_Unit(
+        .ID_PCSrc(ID_PCSrc),
+        .EX_PCSrc(EX_PCsrc),
+        .IF_ID_flush(IF_ID_flush),
+        .ID_EX_flush(ID_EX_flush)
+    );
 //---------------------------------------------------------------
 //------------------[Stage1: Fetch(IF)]--------------------------
     PC_MUX #(.W(W))u_PC_MUX(
         .Target(EX_Target),
+        .Early_Target(ID_Early_Target),
         .next_pc(IF_next_pc),
-        .PCSrc(EX_PCsrc),
+        .ID_PCSrc(ID_PCSrc),
+        .EX_PCSrc(EX_PCsrc),
         .final_next_pc(IF_final_next_pc)
     );
     PC_reg #(.W(W))u_PC_reg(
@@ -82,7 +94,7 @@ module Pipeline_CPU #(parameter W=32)(
     );
 //------------------[Stage2: Decode(ID)]--------------------------
     Pipe_reg_1clk_control #(.W(64)) u_IF_ID_reg(
-        .clk(clk), .reset(reset), .stall(1'b0), .flush(1'b0),
+        .clk(clk), .reset(reset), .stall(1'b0), .flush(IF_ID_flush),
         .D({IF_pc, IF_instruction}),
         .Q({ID_pc, ID_instruction})
     );
@@ -108,10 +120,10 @@ module Pipeline_CPU #(parameter W=32)(
         .is_LW(),
         .is_SW(),
         .is_BEQ(ID_is_BEQ),
-        .is_BGE(),
-        .is_BLT(),
-        .is_BNE(),
-        .is_JAL(),
+        .is_BGE(ID_is_BGE),
+        .is_BLT(ID_is_BLT),
+        .is_BNE(ID_is_BNE),
+        .is_JAL(ID_is_JAL),
         .is_JALR()
     );
     Register_file #(.W(W))u_Regfile(
@@ -141,10 +153,17 @@ module Pipeline_CPU #(parameter W=32)(
         .ALUOp(ID_ALUOp),
         .ALU_Control(ID_ALU_Control)
     );
+    Early_Jump_Unit #(.W(W))u_Early_Jump_Unit(
+        .Imm(ID_imm),
+        .pc(ID_pc),
+        .is_JAL(ID_is_JAL),
+        .Early_Target(ID_Early_Target),
+        .PCSrc(ID_PCSrc)
+    );
     
 //------------------[Stage3: Execute(EX)]--------------------------
-    Pipe_reg_1clk_control #(.W(143)) u_ID_EX_reg(
-        .clk(clk), .reset(reset), .stall(1'b0), .flush(1'b0),
+    Pipe_reg_1clk_control #(.W(146)) u_ID_EX_reg(
+        .clk(clk), .reset(reset), .stall(1'b0), .flush(ID_EX_flush),
         .D({
             ID_pc,
             ID_RegWrite,
@@ -154,6 +173,9 @@ module Pipeline_CPU #(parameter W=32)(
             ID_ALUsrc,
             ID_ALU_Control,
             ID_is_BEQ,
+            ID_is_BNE,
+            ID_is_BLT,
+            ID_is_BGE,
             ID_A,
             ID_B,
             ID_imm,
@@ -168,6 +190,9 @@ module Pipeline_CPU #(parameter W=32)(
             EX_ALUsrc,
             EX_ALU_Control,
             EX_is_BEQ,
+            EX_is_BNE,
+            EX_is_BLT,
+            EX_is_BGE,
             EX_A,
             EX_B,
             EX_imm,
@@ -197,6 +222,9 @@ module Pipeline_CPU #(parameter W=32)(
     PCSrc u_PCSrc(
         .ZF(EX_ZF),
         .is_BEQ(EX_is_BEQ),
+        .is_BNE(EX_is_BNE),
+        .is_BLT(EX_is_BLT),
+        .is_BGE(EX_is_BGE),
         .PCSrc(EX_PCsrc)
     );
 //------------------[Stage4: Memory(MEM)]--------------------------
