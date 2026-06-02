@@ -26,7 +26,7 @@ module Pipeline_CPU #(parameter W=32)(
     wire [1:0] ID_ALUOp;
     wire [3:0] ID_ALU_Control;
     wire ID_is_BEQ, ID_is_BNE, ID_is_BLT, ID_is_BGE;
-    wire ID_is_JAL;
+    wire ID_is_JAL, ID_is_JALR;
     wire [31:0] ID_A, ID_B;
     wire [31:0] ID_imm;
     wire [4:0] ID_Rs1, ID_Rs2, ID_Rd;
@@ -124,7 +124,7 @@ module Pipeline_CPU #(parameter W=32)(
         .is_BLT(ID_is_BLT),
         .is_BNE(ID_is_BNE),
         .is_JAL(ID_is_JAL),
-        .is_JALR()
+        .is_JALR(ID_is_JALR)
     );
     Register_file #(.W(W))u_Regfile(
         .clk(clk),
@@ -156,6 +156,8 @@ module Pipeline_CPU #(parameter W=32)(
     Early_Jump_Unit #(.W(W))u_Early_Jump_Unit(
         .Imm(ID_imm),
         .pc(ID_pc),
+        .Rs1_data(ID_A),
+        .is_JALR(ID_is_JALR),
         .is_JAL(ID_is_JAL),
         .Early_Target(ID_Early_Target),
         .PCSrc(ID_PCSrc)

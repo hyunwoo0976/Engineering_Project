@@ -1,0 +1,23 @@
+32bit RISC-V 기반 CPU 오류
+
+<Branch 중 is_BEQ 만 가능. BNE,BGE,BLT 뺴고 실행. 단순 상수 넣기 연산 0이면 점프 이기능밖에없엇음
+    1.명령서 파일 안 읽혀짐
+        ->F_file에 명령서 파일 넣어서그럼
+        =>삭제
+    => 오류 수정후 잘 구동
+
+<Branch 값 전부 포함, JAL기능 추가/ 아직 JALR,LW,SW 구현 x/>
+    Hazard 유닛 추가, ID단계에서 점프 확정되면 먼저 점프하는 Early_Jump_Unit 추가
+    1.주소값 반복.
+        자꾸 00->(04<->08)이렇게 반복되었음
+        주소값이 반복되어 명령어도 반복되는 거로 보고 수정
+        Early_Jump_Unit에 assign PCSrc = (Early_Target) ? 1'b1 : 1'b0;이렇게 되어있어 항상 수행되어 flush되던거였음. 
+        Early_Target = imm(0) + pc(4)
+
+        ->if 문으로 수정
+
+
+
+CPU_Error2에 관한것. 
+    JAL명령어가 들어와 x2에 999가 들어가지 않아야함. 하지만 IMM이 6이 되어 target이 12로 됨.
+    ->Hazard 유닛은 잘 작동되어 flush되서 0이되고 pc가12인 00C0006F의 다음 명령어가 수행됨

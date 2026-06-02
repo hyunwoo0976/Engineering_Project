@@ -15,10 +15,10 @@ module ImmGen #(parameter W=32)(
                 imm_out = {{20{inst[31]}}, inst[31:25], inst[11:7]};
             end
             7'b1100011: begin
-                imm_out = {{20{inst[31]}}, inst[31], inst[7], inst[30:25], inst[11:8]};
+                imm_out = {{20{inst[31]}}, inst[7], inst[30:25], inst[11:8], 1'b0};
             end
             7'b1101111: begin
-                imm_out = {{12{inst[31]}}, inst[31], inst[19:12], inst[20], inst[30:21]};
+                imm_out = {{12{inst[31]}}, inst[19:12], inst[20], inst[30:21], 1'b0};
             end
             default: imm_out=32'b0;
 
