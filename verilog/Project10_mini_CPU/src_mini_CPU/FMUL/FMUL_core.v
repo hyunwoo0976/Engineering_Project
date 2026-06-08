@@ -5,6 +5,7 @@ module FMUL_core #(parameter W=32)(
     input wire [7:0]s1_EXPO_A,s1_EXPO_B,
     input wire [22:0]s1_FRAC_A,s1_FRAC_B,
     input wire clk,reset,
+    input wire [2:0]s4_rm,
     output wire [W-1:0]s6_MUL_out,
     output wire s6_OF,s6_UF
 );
@@ -128,6 +129,7 @@ module FMUL_core #(parameter W=32)(
     Normalization_MUL #(.W(48)) s4_frac_nor(
         .FRAC_mul(s4_FRAC_mul),
         .FRAC_out(s4_FRAC),
+        .rm(s4_rm),
         .count(s4_count),
         .round_carry(s4_round_carry)
     );

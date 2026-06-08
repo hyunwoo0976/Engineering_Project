@@ -1,25 +1,30 @@
-module Top_module #(parameter W=32)(
+module FPU #(parameter W=32)(
     input [W-1:0]IN_A,IN_B,
     input [1:0]op,
+    input [2:0]rm,
     input FPU_en,
     input clk,reset,
     output [W-1:0]result_out,
-    output error,OF,UF
+    output error,OF,UF,
+    output ZF,sign
 );
-    wire [31:0]s1_IN_A,s1_IN_B;
+    wire [31:0] s1_IN_A, s1_IN_B;
     
     wire s1_en;
     
-    wire s1_SIGN_A,s1_SIGN_B;
-    wire [7:0]s1_EXPO_A,s1_EXPO_B;
-    wire [22:0]s1_FRAC_A,s1_FRAC_B;
+    wire s1_SIGN_A, s1_SIGN_B;
+    wire [7:0] s1_EXPO_A, s1_EXPO_B;
+    wire [22:0] s1_FRAC_A, s1_FRAC_B;
 
-    wire [31:0]ADD_out,MUL_out;
-    wire [31:0]final_out;
+    wire [31:0] ADD_out, MUL_out;
+    wire [31:0] final_out;
+
+    wire [2:0] s1_rm, s2_rm, s3_rm, s4_rm, s5_rm, s6_rm;
 
     wire OF_ADD,OF_MUL,UF_ADD,UF_MUL,error_ADD;
     wire s6_OF, s6_UF, s6_error;
     wire s1_op, s2_op, s3_op, s4_op, s5_op, s6_op;
+    wire s6_ZF, s6_sign;
 
 
 
@@ -44,34 +49,50 @@ module Top_module #(parameter W=32)(
         .FRAC(s1_FRAC_B)
     );
 
+    Pipe_reg_1clk #(.W(3)) reg_rm_s0_s1(.clk(clk), .reset(reset), .D(rm), .Q(s1_rm));
+    Pipe_reg_1clk #(.W(3)) reg_rm_s1_s2(.clk(clk), .reset(reset), .D(s1_rm), .Q(s2_rm));
+    Pipe_reg_1clk #(.W(3)) reg_rm_s2_s3(.clk(clk), .reset(reset), .D(s2_rm), .Q(s3_rm));
+    Pipe_reg_1clk #(.W(3)) reg_rm_s3_s4(.clk(clk), .reset(reset), .D(s3_rm), .Q(s4_rm));
+    Pipe_reg_1clk #(.W(3)) reg_rm_s4_s5(.clk(clk), .reset(reset), .D(s4_rm), .Q(s5_rm));
+    Pipe_reg_1clk #(.W(3)) reg_rm_s5_s6(.clk(clk), .reset(reset), .D(s5_rm), .Q(s6_rm));
+
+    
     FADD_core #(.W(32))FPU_ADD(
         .clk(clk), .reset(reset),
-        .s6_ADD_out(ADD_out),
-        .s1_en(s1_en),
+
         .op(op),
-        .s6_OF(OF_ADD),
-        .s6_UF(UF_ADD),
-        .s6_error(error_ADD),
+
+        .s1_en(s1_en),
         .s1_SIGN_A(s1_SIGN_A),
         .s1_EXPO_A(s1_EXPO_A),
         .s1_FRAC_A(s1_FRAC_A),
         .s1_SIGN_B(s1_SIGN_B),
         .s1_EXPO_B(s1_EXPO_B),
-        .s1_FRAC_B(s1_FRAC_B)
+        .s1_FRAC_B(s1_FRAC_B),
+
+        .s6_error(error_ADD),
+        .s6_ADD_out(ADD_out),
+        .s6_rm(s6_rm),
+        .s6_OF(OF_ADD),
+        .s6_UF(UF_ADD)
     );
 
     FMUL_core #(.W(32))FPU_MUL(
         .clk(clk), .reset(reset),
-        .s6_MUL_out(MUL_out),
+
         .s1_en(s1_en),
-        .s6_OF(OF_MUL),
-        .s6_UF(UF_MUL),
         .s1_SIGN_A(s1_SIGN_A),
         .s1_EXPO_A(s1_EXPO_A),
         .s1_FRAC_A(s1_FRAC_A),
         .s1_SIGN_B(s1_SIGN_B),
         .s1_EXPO_B(s1_EXPO_B),
-        .s1_FRAC_B(s1_FRAC_B)
+        .s1_FRAC_B(s1_FRAC_B),
+
+        .s4_rm(s4_rm),
+
+        .s6_MUL_out(MUL_out),
+        .s6_OF(OF_MUL),
+        .s6_UF(UF_MUL)
     );
     Pipe_reg_1clk #(.W(1)) reg_op_s0_s1(.clk(clk), .reset(reset), .D(op[1]), .Q(s1_op));
     Pipe_reg_1clk #(.W(1)) reg_op_s1_s2(.clk(clk), .reset(reset), .D(s1_op), .Q(s2_op));
@@ -80,7 +101,7 @@ module Top_module #(parameter W=32)(
     Pipe_reg_1clk #(.W(1)) reg_op_s4_s5(.clk(clk), .reset(reset), .D(s4_op), .Q(s5_op));
     Pipe_reg_1clk #(.W(1)) reg_op_s5_s6(.clk(clk), .reset(reset), .D(s5_op), .Q(s6_op));
 
-    MUX #(.W(32))final_mux(
+    MUX #(.W(32))final_mux_s6(
         .ADD_out(ADD_out),
         .MUL_out(MUL_out),
         .op(s6_op),
@@ -91,6 +112,8 @@ module Top_module #(parameter W=32)(
         .UF_MUL(UF_MUL),
         .OF(s6_OF),
         .UF(s6_UF),
+        .ZF(s6_ZF),
+        .sign(s6_sign),
         .error(s6_error),
         .Final_out(final_out)
     );

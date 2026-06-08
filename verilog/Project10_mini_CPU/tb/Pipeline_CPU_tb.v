@@ -4,6 +4,7 @@ module Pipeline_CPU_tb #(parameter W=32);
     wire [31:0]current_inst;
     wire [31:0]current_pc;
     wire [31:0]wb_data;
+    wire wb_FPU_OF, wb_FPU_UF;
 
     always #5 clk=~clk;
 
@@ -19,7 +20,9 @@ module Pipeline_CPU_tb #(parameter W=32);
         .reset(reset),
         .current_inst(current_inst),
         .current_pc(current_pc),
-        .wb_data(wb_data)
+        .wb_data(wb_data),
+        .wb_FPU_OF(wb_FPU_OF),
+        .wb_FPU_UF(wb_FPU_UF)
     );
 
     initial begin

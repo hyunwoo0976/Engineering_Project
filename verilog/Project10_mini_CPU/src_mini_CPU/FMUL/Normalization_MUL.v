@@ -1,5 +1,6 @@
 module Normalization_MUL #(parameter W=48)(
     input [W-1:0] FRAC_mul,
+    input [2:0]rm,
     output [22:0]FRAC_out,
     output reg count,
     output round_carry
@@ -7,23 +8,32 @@ module Normalization_MUL #(parameter W=48)(
     reg [22:0]FRAC_etc;
     reg L,G,S;
     wire round_up;
-    wire [23:0] rounded_FRAC=FRAC_etc+round_up;
+    wire [23:0] rounded_FRAC = FRAC_etc + round_up;
 
 
     always @(*)begin
-        if(FRAC_mul[47]==1'b1)begin
-            FRAC_etc=FRAC_mul[46:24];
-            count=1;
-            L=FRAC_etc[0];
-            G=FRAC_mul[23];
-            S=|FRAC_mul[22:0];
-        end
+        count = 1'b0;
+        {L, G, S} = 3'b000;
+
+        if (FRAC_mul[47] == 1'b1) begin
+            FRAC_etc = FRAC_mul[46:24];
+            count = 1'b1;
+            
+            if (rm == 3'b000) begin
+                L = FRAC_etc[0];
+                G = FRAC_mul[23];
+                S = |FRAC_mul[22:0];
+            end
+        end 
         else begin
-            FRAC_etc=FRAC_mul[45:23];
-            count=0;
-            L=FRAC_etc[0];
-            G=FRAC_mul[22];
-            S=|FRAC_mul[21:0];
+            FRAC_etc = FRAC_mul[45:23];
+            count = 1'b0;
+
+            if (rm == 3'b000) begin
+                L = FRAC_etc[0];
+                G = FRAC_mul[22];
+                S = |FRAC_mul[21:0];
+            end
         end
     end
 

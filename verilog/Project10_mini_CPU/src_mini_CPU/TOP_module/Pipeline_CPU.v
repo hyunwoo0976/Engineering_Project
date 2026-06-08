@@ -3,12 +3,15 @@ module Pipeline_CPU #(parameter W=32)(
     input clk, reset,
     output [W-1:0]current_pc,
     output [W-1:0]current_inst,
-    output [W-1:0]wb_data
+    output [W-1:0]wb_data,
+    output wb_FPU_OF, wb_FPU_UF
 );
 
     assign current_pc = IF_pc;
     assign current_inst = ID_instruction;
     assign wb_data = WB_OUT;
+    assign wb_FPU_OF = WB_FPU_OF;
+    assign wb_FPU_UF = WB_FPU_UF;
 
 //------------------------------[wire]--------------------------------
     wire IF_ID_flush, ID_EX_flush;
@@ -19,15 +22,20 @@ module Pipeline_CPU #(parameter W=32)(
     wire [31:0] IF_instruction;
 //------------------[Stage2: Decode(ID)]------------------------------
     wire [31:0] ID_pc;
+    wire [2:0] ID_rm;
     wire [31:0] ID_instruction;
-    wire ID_RegWrite, ID_MemtoReg, ID_MemRead, ID_MemWrite, ID_Branch, ID_ALUsrc;
+    wire ID_RegWrite, ID_MemtoReg, ID_MemRead, ID_MemWrite, ID_Branch, ID_ALUsrc, ID_FRegWrite;
     wire ID_funct7_bit30;
-    wire [2:0] ID_Funct3;
+    wire [2:0] ID_funct3;
+    wire [6:0] ID_funct7;
     wire [1:0] ID_ALUOp;
     wire [3:0] ID_ALU_Control;
+    wire [1:0] ID_FPU_Control;
     wire ID_is_BEQ, ID_is_BNE, ID_is_BLT, ID_is_BGE;
     wire ID_is_JAL, ID_is_JALR;
-    wire [31:0] ID_A, ID_B;
+    wire ID_is_FPU;
+    wire ID_FPU_en;
+    wire [31:0] ID_A, ID_B, ID_F_A, ID_F_B;
     wire [31:0] ID_imm;
     wire [4:0] ID_Rs1, ID_Rs2, ID_Rd;
     wire ID_PCSrc;
@@ -35,30 +43,39 @@ module Pipeline_CPU #(parameter W=32)(
 
 //------------------[Stage3: Execute(EX)]-----------------------------
     wire [31:0] EX_pc;
-    wire EX_RegWrite, EX_MemtoReg, EX_MemRead, EX_MemWrite, EX_ALUsrc;
+    wire [2:0] EX_rm;
+    wire EX_RegWrite, EX_MemtoReg, EX_MemRead, EX_MemWrite, EX_ALUsrc, EX_FRegWrite;
     wire [3:0] EX_ALU_Control;
+    wire [1:0] EX_FPU_Control;
     wire EX_is_BEQ, EX_is_BNE, EX_is_BLT, EX_is_BGE;
-    wire [31:0] EX_A, EX_B;
+    wire [31:0] EX_A, EX_B, EX_F_A, EX_F_B;
     wire [31:0] EX_ALU_in_b;
     wire [31:0] EX_imm;
     wire [4:0] EX_Rd;
     wire [31:0] EX_Target;
-    wire [31:0] EX_Result;
+    wire [31:0] EX_ALU_Result, EX_FPU_Result;
     wire EX_PCsrc;
-    wire EX_ZF, EX_sign;
+    wire EX_ALU_ZF, EX_ALU_sign;
+    wire EX_FPU_ZF, EX_FPU_sign;
+    wire EX_FPU_en;
+    wire EX_FPU_OF, EX_FPU_UF;
+    wire EX_ZF;
 
 //------------------[Stage4: Memory(MEM)]-----------------------------
-    wire MEM_RegWrite, MEM_MemWrite, MEM_MemRead, MEM_MemtoReg;
-    wire [31:0] MEM_Result;
+    wire MEM_RegWrite, MEM_MemWrite, MEM_MemRead, MEM_MemtoReg, MEM_FRegWrite;
+    wire [31:0] MEM_ALU_Result, MEM_FPU_Result;
     wire [31:0] MEM_B;
     wire [4:0] MEM_Rd;
     wire [31:0] MEM_read_data;
+    wire MEM_FPU_OF, MEM_FPU_UF;
+
 //------------------[Stage5: Write-Back(WB)]--------------------------
-    wire WB_RegWrite, WB_MemtoReg;
-    wire [31:0] WB_Result;
+    wire WB_RegWrite, WB_MemtoReg, WB_FRegWrite;
+    wire [31:0] WB_ALU_Result, WB_FPU_Result;
     wire [4:0] WB_Rd;
     wire [31:0] WB_OUT;
     wire [31:0] WB_read_data;
+    wire WB_FPU_OF, WB_FPU_UF;
 
 
 //---------------------------------------------------------------
@@ -108,15 +125,17 @@ module Pipeline_CPU #(parameter W=32)(
         .Branch(ID_Branch),
         .MemWrite(ID_MemWrite),
         .ALUsrc(ID_ALUsrc),
+        .FRegWrite(ID_FRegWrite),
 
         .funct7_bit30(ID_funct7_bit30),
-        .funct3(ID_Funct3),
+        .funct7(ID_funct7),
+        .funct3(ID_funct3),
 
         .rs1(ID_Rs1),
         .rs2(ID_Rs2),
         .rd(ID_Rd),
         .ALUOp(ID_ALUOp),
-        .FPU_en(),
+        .is_FPU(ID_is_FPU),
         .is_LW(),
         .is_SW(),
         .is_BEQ(ID_is_BEQ),
@@ -143,15 +162,41 @@ module Pipeline_CPU #(parameter W=32)(
         .Rs2_data(ID_B),
         .Rt_data()
     );
+    Register_file #(.W(W))u_FPU_Regfile(
+        .clk(clk),
+        .reset(reset),
+
+        //[WB sign]
+        .we(WB_FRegWrite),
+        .we_data(WB_FPU_Result),
+        .we_addr(WB_Rd),
+
+        //[ID sign]
+        .Rs1_addr(ID_Rs1),
+        .Rs2_addr(ID_Rs2),
+        .Rt_addr(ID_Rd),
+        .Rs1_data(ID_F_A),
+        .Rs2_data(ID_F_B),
+        .Rt_data()
+    );
     ImmGen #(.W(W)) u_ImmGen(
         .inst(ID_instruction),
         .imm_out(ID_imm)
     );
     ALU_Control #(.W(W))u_ALU_Control(
         .funct7_bit30(ID_funct7_bit30),
-        .Funct3(ID_Funct3),
+        .Funct3(ID_funct3),
         .ALUOp(ID_ALUOp),
         .ALU_Control(ID_ALU_Control)
+    );
+    FPU_Control #(.W(W)) u_FPU_Control(
+        .Funct7(ID_funct7),
+        .Funct3(ID_funct3),
+        .is_FPU(ID_is_FPU),
+        .error(),
+        .rm(ID_rm),
+        .FPU_en(ID_FPU_en),
+        .FPU_Control(ID_FPU_Control)
     );
     Early_Jump_Unit #(.W(W))u_Early_Jump_Unit(
         .Imm(ID_imm),
@@ -164,15 +209,17 @@ module Pipeline_CPU #(parameter W=32)(
     );
     
 //------------------[Stage3: Execute(EX)]--------------------------
-    Pipe_reg_1clk_control #(.W(146)) u_ID_EX_reg(
+    Pipe_reg_1clk_control #(.W(217)) u_ID_EX_reg(
         .clk(clk), .reset(reset), .stall(1'b0), .flush(ID_EX_flush),
         .D({
             ID_pc,
+            ID_rm,
             ID_RegWrite,
             ID_MemtoReg,
             ID_MemRead,
             ID_MemWrite,
             ID_ALUsrc,
+            ID_FRegWrite,
             ID_ALU_Control,
             ID_is_BEQ,
             ID_is_BNE,
@@ -180,16 +227,22 @@ module Pipeline_CPU #(parameter W=32)(
             ID_is_BGE,
             ID_A,
             ID_B,
+            ID_F_A,
+            ID_F_B,
             ID_imm,
-            ID_Rd
+            ID_Rd,
+            ID_FPU_en,
+            ID_FPU_Control
         }),
         .Q({
             EX_pc,
+            EX_rm,
             EX_RegWrite,
             EX_MemtoReg,
             EX_MemRead,
             EX_MemWrite,
             EX_ALUsrc,
+            EX_FRegWrite,
             EX_ALU_Control,
             EX_is_BEQ,
             EX_is_BNE,
@@ -197,8 +250,12 @@ module Pipeline_CPU #(parameter W=32)(
             EX_is_BGE,
             EX_A,
             EX_B,
+            EX_F_A,
+            EX_F_B,
             EX_imm,
-            EX_Rd
+            EX_Rd,
+            EX_FPU_en,
+            EX_FPU_Control
         })
     );
 
@@ -217,9 +274,22 @@ module Pipeline_CPU #(parameter W=32)(
         .A(EX_A),
         .B(EX_ALU_in_b),
         .ALU_Control(EX_ALU_Control),
-        .Result(EX_Result),
-        .ZF(EX_ZF),
-        .sign(EX_sign)
+        .Result(EX_ALU_Result),
+        .ZF(EX_ALU_ZF),
+        .sign(EX_ALU_sign)
+    );
+    FPU #(.W(W)) u_FPU(
+        .IN_A(EX_F_A),
+        .IN_B(EX_F_B),
+        .op(EX_FPU_Control),
+        .FPU_en(EX_FPU_en),
+        .rm(EX_rm),
+        .ZF(EX_FPU_ZF),
+        .sign(EX_FPU_sign),
+        .OF(EX_FPU_OF),
+        .UF(EX_FPU_UF),
+        .error(),
+        .result_out(EX_FPU_Result)
     );
     PCSrc u_PCSrc(
         .ZF(EX_ZF),
@@ -230,25 +300,33 @@ module Pipeline_CPU #(parameter W=32)(
         .PCSrc(EX_PCsrc)
     );
 //------------------[Stage4: Memory(MEM)]--------------------------
-     Pipe_reg_1clk_control #(.W(73)) u_EX_MEM_reg(
+     Pipe_reg_1clk_control #(.W(108)) u_EX_MEM_reg(
         .clk(clk), .reset(reset), .stall(1'b0), .flush(1'b0),
         .D({
             EX_RegWrite,
             EX_MemWrite,
             EX_MemRead,
             EX_MemtoReg,
-            EX_Result,
+            EX_FRegWrite,
+            EX_ALU_Result,
+            EX_FPU_Result,
             EX_B,
-            EX_Rd
+            EX_Rd,
+            EX_FPU_OF,
+            EX_FPU_UF
         }),
         .Q({
             MEM_RegWrite,
             MEM_MemWrite,
             MEM_MemRead,
             MEM_MemtoReg,
-            MEM_Result,
+            MEM_FRegWrite,
+            MEM_ALU_Result,
+            MEM_FPU_Result,
             MEM_B,
-            MEM_Rd
+            MEM_Rd,
+            MEM_FPU_OF,
+            MEM_FPU_UF
         })
     );
 
@@ -257,30 +335,38 @@ module Pipeline_CPU #(parameter W=32)(
         .reset(reset),
         .MemWrite(MEM_MemWrite),
         .MemRead(MEM_MemRead),
-        .addr(MEM_Result),
+        .addr(MEM_ALU_Result),
         .write_data(MEM_B),
         .read_data(MEM_read_data)
     );
 //------------------[Stage5: Write-Back(WB)]--------------------------
-    Pipe_reg_1clk_control #(.W(71)) u_MEM_WB_reg(
+    Pipe_reg_1clk_control #(.W(106)) u_MEM_WB_reg(
         .clk(clk), .reset(reset), .stall(1'b0), .flush(1'b0),
         .D({
             MEM_RegWrite,
             MEM_MemtoReg,
+            MEM_FRegWrite,
             MEM_read_data,
-            MEM_Result,
-            MEM_Rd
+            MEM_ALU_Result,
+            MEM_FPU_Result,
+            MEM_Rd,
+            MEM_FPU_OF, 
+            MEM_FPU_UF
         }),
         .Q({
             WB_RegWrite,
             WB_MemtoReg,
+            WB_FRegWrite,
             WB_read_data,
-            WB_Result,
-            WB_Rd
+            WB_ALU_Result,
+            WB_FPU_Result,
+            WB_Rd,
+            WB_FPU_OF, 
+            WB_FPU_UF
         })
     );
     CPU_MUX #(.W(W))u_CPU_MUX(
-        .ALU_result(WB_Result),
+        .ALU_result(WB_ALU_Result),
         .mem_read_data(WB_read_data),
         .MemtoReg(WB_MemtoReg),
         .OUT(WB_OUT)
