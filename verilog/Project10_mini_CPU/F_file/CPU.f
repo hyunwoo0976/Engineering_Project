@@ -5,6 +5,7 @@
 ./verilog/Project10_mini_CPU/src_mini_CPU/ALU/calculate_group.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/ALU/logical_group.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/ALU/shift_group.v
+./verilog/Project10_mini_CPU/src_mini_CPU/ALU/ALU_port_MUX.v
 //========================================[Register]===============================================
 ./verilog/Project10_mini_CPU/src_mini_CPU/Register/Data_Memory.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/Register/Register_file.v
@@ -12,7 +13,6 @@
 ./verilog/Project10_mini_CPU/src_mini_CPU/Register/Pipe_reg_1clk.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/Register/Pipe_reg_1clk_en.v
 //========================================[MUX]===============================================
-./verilog/Project10_mini_CPU/src_mini_CPU/MUX/ALUsrc_MUX.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/MUX/CPU_MUX.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/MUX/PC_MUX.v
 //========================================[]===============================================
@@ -21,6 +21,8 @@
 ./verilog/Project10_mini_CPU/src_mini_CPU/Main_Decoder.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/Hazard_Unit.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/Early_Jump_Unit.v
+./verilog/Project10_mini_CPU/src_mini_CPU/JALR_Jump_Unit.v
+./verilog/Project10_mini_CPU/src_mini_CPU/Forwarding_Unit.v
 //========================================[pc]===============================================
 ./verilog/Project10_mini_CPU/src_mini_CPU/PC/PC_Adder.v
 ./verilog/Project10_mini_CPU/src_mini_CPU/PC/PC_reg.v

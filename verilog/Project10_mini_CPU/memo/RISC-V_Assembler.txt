@@ -1,0 +1,20 @@
+Funct7:[31:25] / Rs2:[24:20] / Rs1:[19:15] / Funct3:[14:12] / Rd:[11:7] / Opcode:[6:0]  /// Funct5[31:27]
+
+R-type: funct7[7bit] / Rs2[5bit] / Rs1[5bit] / funct3[3bit] / Rd[5bit] / opcode[7bit]
+	ADD,SUB,OR,XOR,SLL,SRL...
+
+I-type: imm[11:0][12bit] / rs1[5bit] / funct3[3bit] / rd[5bit] / opcode[7bit]
+	ADDI, ANDI, LW, JALR
+
+S-type: imm[11:5][7bit] / rs2[5bit] / rs1[5bit] / funct3[3bit] / imm[4:0][5bit] / opcode[7bit]
+	SW,
+
+B-type: imm[12|10:5][7bit] / rs2[5bit] / rs1[5bit] / funct3[3bit] / imm[4:1|11][5bit] / opcode[7bit]
+	BEQ, BNE, BLT, BGE
+
+J-type: imm[20|10:1|11|19:12][20bit] / rd[5bit] / opcode[7bit]
+	JAL
+
+
+
+00C00093-> 0000_0000_1100_0000_0000_0000_1001_0011

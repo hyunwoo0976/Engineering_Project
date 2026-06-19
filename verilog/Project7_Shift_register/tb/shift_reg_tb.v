@@ -25,6 +25,7 @@ module shift_reg_tb #(parameter W=32);
     integer i;
     initial begin
         clk=0; reset=1; load=0; shift=0;
+        D_in = 32'd0;
         #15;
         reset=0;
         D_in=32'hA5A5_F0F0;

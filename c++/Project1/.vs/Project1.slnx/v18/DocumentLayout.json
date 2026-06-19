@@ -1,0 +1,52 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\My project\\Engineering_Project\\c\u002B\u002B\\Project1\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{4A50548E-3E49-4839-8C0D-0493C4BEE871}|..\\Project3\\Project3.vcxproj|D:\\My project\\Engineering_Project\\c\u002B\u002B\\Project3\\diamond.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4A50548E-3E49-4839-8C0D-0493C4BEE871}|..\\Project3\\Project3.vcxproj|D:\\My project\\Engineering_Project\\c\u002B\u002B\\Project3\\pyramid_signal_generator.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "diamond.cpp",
+              "DocumentMoniker": "D:\\My project\\Engineering_Project\\c\u002B\u002B\\Project3\\diamond.cpp",
+              "RelativeDocumentMoniker": "..\\Project3\\diamond.cpp",
+              "ToolTip": "D:\\My project\\Engineering_Project\\c\u002B\u002B\\Project3\\diamond.cpp",
+              "RelativeToolTip": "..\\Project3\\diamond.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAPAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2026-06-18T04:59:59.309Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "pyramid_signal_generator.cpp",
+              "DocumentMoniker": "D:\\My project\\Engineering_Project\\c\u002B\u002B\\Project3\\pyramid_signal_generator.cpp",
+              "RelativeDocumentMoniker": "..\\Project3\\pyramid_signal_generator.cpp",
+              "ToolTip": "D:\\My project\\Engineering_Project\\c\u002B\u002B\\Project3\\pyramid_signal_generator.cpp",
+              "RelativeToolTip": "..\\Project3\\pyramid_signal_generator.cpp",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAABgAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2026-06-18T00:58:35.859Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

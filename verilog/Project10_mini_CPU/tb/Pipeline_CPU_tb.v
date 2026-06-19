@@ -32,7 +32,7 @@ module Pipeline_CPU_tb #(parameter W=32);
         repeat(2) @(negedge clk);
         reset=0;
 
-        #1000;
+        #100;
         $finish;
     end
 endmodule

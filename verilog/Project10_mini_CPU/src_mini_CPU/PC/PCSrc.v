@@ -1,6 +1,6 @@
 module PCSrc (
     input ZF,sign,
-    input is_BEQ, is_BNE, is_BLT, is_BGE, 
+    input is_BEQ, is_BNE, is_BLT, is_BGE,
     output PCSrc
 );
 

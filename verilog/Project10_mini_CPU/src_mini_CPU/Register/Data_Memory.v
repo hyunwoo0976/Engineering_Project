@@ -1,5 +1,5 @@
 module Data_Memory #(parameter W=32)(
-    input clk, reset,
+    input clk,
     input MemWrite,
     input MemRead,
     input [W-1:0] addr,
@@ -7,21 +7,16 @@ module Data_Memory #(parameter W=32)(
     output [W-1:0] read_data
 );
 
-    reg [W-1:0]mem[0:31];
+    reg [W-1:0]mem[0:1023];
+    initial begin
+        $readmemh("./verilog/Project10_mini_CPU/memo/data.mem", mem);
+    end
 
-    integer i;
-    wire [4:0] index = addr[6:2];
-
-    always @(posedge clk or posedge reset)begin
-        if(reset)begin
-            for(i=0; i<W; i=i+1)begin
-                mem[i]<=32'b0;
-            end
-        end
-        else if(MemWrite)begin
-            mem[index]<=write_data;
+    always @(posedge clk)begin
+        if(MemWrite)begin
+            mem[addr >> 2]<=write_data;
         end
     end
     
-    assign read_data=(MemRead) ? mem[index] : 32'b0;
+    assign read_data=(MemRead) ? mem[addr >> 2] : 32'b0;
 endmodule

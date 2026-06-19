@@ -17,22 +17,42 @@ module ALU_Control #(parameter W=32)(
             2'b10:begin
                 case(Funct3)
                     3'b000: begin
-                        ALU_Control=(funct7_bit30) ? 4'b0110 : 4'b0010;
+                        if(funct7_bit30)begin
+                            ALU_Control = 4'b0110;                          //SUB
+                        end
+                        else begin
+                            ALU_Control = 4'b0010;                          //ADD
+                        end
                     end
                     3'b001: begin
-                        ALU_Control=4'b1000;
+                        ALU_Control=4'b1000;                                //SLL
                     end
                     3'b100:begin
-                        ALU_Control=4'b0000;
+                        ALU_Control=4'b0000;                                //XOR
                     end
                     3'b101:begin
-                        ALU_Control=(funct7_bit30) ? 4'b1010 : 4'b1001;
+                        if(funct7_bit30)begin
+                            ALU_Control = 4'b1010;                          //SRA
+                        end
+                        else begin
+                            ALU_Control = 4'b1001;                          //SRL
+                        end
                     end
                     3'b110:begin
-                        ALU_Control=4'b0001;
+                        ALU_Control=4'b0001;                                //OR
                     end
                     3'b111:begin
-                        ALU_Control=4'b0000;
+                        ALU_Control=4'b0000;                                //AND
+                    end
+                endcase
+            end
+            2'b11: begin
+                case(Funct3)
+                    3'b000:begin                                            //ADDI
+                        ALU_Control = 4'b0010;
+                    end
+                    3'b111:begin                                            //ANDI
+                        ALU_Control = 4'b0110;
                     end
                 endcase
             end

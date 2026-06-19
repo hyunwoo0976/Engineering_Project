@@ -44,6 +44,7 @@ module N_bit_adder#(parameter N=4)(
 endmodule
 ```
 
+
 ### 2) Design Module 2: Parameterized N-bit Subtractor (`calculate_sub`)
 
 ```verilog
@@ -85,7 +86,8 @@ module alu_Nbit #(parameter N=4)(
     input [N-1:0] a, b,
     input [1:0] mode,
     input cin,
-    output reg [N:0] result
+    output reg [N:0] result,
+    output reg cout
 );
     wire[N-1:0] add_sum;
     wire[N-1:0] sub_sum;
@@ -110,8 +112,14 @@ module alu_Nbit #(parameter N=4)(
 
     always @(*) begin
         case(mode)
-            2'b00: result = {add_cout, add_sum};
-            2'b01: result = {1'b0, sub_sum};
+            2'b00:begin
+                result = {add_cout, add_sum};
+                cout=add_cout;
+            end
+            2'b01:begin
+                result = {1'b0, sub_sum};
+                cout=sub_cout;
+            end
             2'b10: result = {1'b0, a & b};
             2'b11: result = {1'b0, a | b};
             default: result = 0;
@@ -120,7 +128,7 @@ module alu_Nbit #(parameter N=4)(
 endmodule
 ```
 
-* Declared a and b to receive N-bit input values.
+* Declared `a` and `b` to receive N-bit input values.
 
 * Set result to be 1 bit larger to flexibly handle potential overflow.
 
@@ -128,7 +136,7 @@ endmodule
 
 * Instantiated the N-bit adder module and the subtractor module.
 
-* Used a case statement to set addition when mode is 00, subtraction for 01, AND operation for 10, and OR operation for 11.
+* Used a case statement to set addition when mode is `00`, subtraction for `01`, AND operation for `10`, and OR operation for `11`.
 
 * Used default to prevent any potential errors.
 
@@ -136,11 +144,11 @@ endmodule
 
 ```verilog
 `timescale 1ns/1ps
-module ALU_tb;
-    reg [3:0] x, y;
+module ALU_tb#(parameter N=4);
+    reg [N-1:0] x, y;
     reg [1:0] mode;
     reg cin;
-    wire [3:0] result;
+    wire [N:0] result;
     wire cout;
 
     initial begin
@@ -152,7 +160,7 @@ module ALU_tb;
         $dumpvars(0, ALU_tb);
     end
 
-    alu_Nbit uut(
+    alu_Nbit #(.N(4))uut(
         .a(x),
         .b(y),
         .cin(cin),
@@ -175,8 +183,50 @@ module ALU_tb;
     end
 endmodule
 ```
-* Declared external input values x, y, mode, and cin as reg types, and the outputs result and cout as wire types.
+* Declared external input values `x`, `y`, `mode`, and `cin` as reg types, and the outputs result and `cout` as wire types.
 
-* Used an integer to loop 4 times, since mode 00 is addition, 01 is subtraction, 10 is AND, and 11 is OR.
+* Used an integer to loop 4 times, since mode `00` is addition, `01` is subtraction, `10` is AND, and `11` is OR.
 
 * Repeated 10 times for each mode, resulting in a total of 40 iterations. cin was set to 0.
+
+## 4. Waveform Verification
+
+![ALU_wave](./img_ALU/ALU_wave.PNG)
+
+We confirmed that the waveform outputs were correct for all test cases, as cin was set to 0 for all operations.
+
+1) **Mode 00 (Addition):** When `x=D` and `y=D`, the result is `A`.
+
+* Since `D=13`, in 4-bit binary it is `1101`. The calculation is `1101 + 1101 = 11010`. We observe a cout (carry-out) of `1`, and the 4-bit result becomes `1010 (A)`, confirming a successful addition.
+
+
+2) **Mode 00 (Addition):** When `x=9` and `y=6`, the result is `F`.
+
+* In binary, `1001 + 0110 = 1111 (15)`. With `cout=0` and `result=F`, the output is verified as correct.
+
+
+3) **Mode 01 (Subtraction):** When `x=D` and `y=5`, the result is `8`.
+
+* This operation represents `1101 - 0101`. Using the 2's complement of `0101 (1011)`, the calculation becomes `1101 + 1011 = 11000`. This confirms `cout=1` and the result `1000 (8)` is correctly output.
+
+
+4) **Mode 01 (Subtraction):** When `x=0` and `y=0`, the result is `0`.
+
+* The operation is `0000 - 0000`. As the 2's complement of `0000` is `0000`, the sum `0000 + 0000 = 0000` confirms `cout=0` and `result=0`, matching the design intent.
+
+
+5) **Mode 10 (AND Operation):** When `x=D` and `y=F`, the result is `D`.
+
+* In binary, `1101 & 1111 = 1101`. Passing the inputs through the AND gate logic correctly outputs `D`.
+
+
+6) **Mode 11 (OR Operation):** When `x=1` and `y=9`, the result is `9`.
+
+* In binary, `0001 | 1001 = 1001`. Passing the inputs through the OR gate logic correctly outputs 9.
+
+## 5. Conclusion
+* Understanding Hierarchical Design: Implemented a Top-Down design methodology by encapsulating independent Adder and Subtractor modules as sub-components managed by a top-level controller, establishing a fundamental understanding of complex system construction.
+
+* Data Integrity & Overflow Handling: Designed the output signal width to N+1 bits to prevent data loss by accurately capturing the Carry-out, ensuring reliable detection and verification of arithmetic overflows.
+
+* Verification Automation: Leveraged for loops and the $random function in the testbench to automate a wide array of input test cases (40 iterations total). This approach surpassed the limitations of manual verification and significantly enhanced the overall reliability of the hardware design.

@@ -30,11 +30,11 @@ module alu_Nbit #(parameter N=4)(
         case(mode)
             2'b00:begin
                 result = {add_cout, add_sum};
-                cout<=add_cout;
+                cout=add_cout;
             end
             2'b01:begin
                 result = {1'b0, sub_sum};
-                cout<=sub_cout;
+                cout=sub_cout;
             end
             2'b10: result = {1'b0, a & b};
             2'b11: result = {1'b0, a | b};

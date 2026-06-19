@@ -50,17 +50,17 @@ module Main_Decoder #(parameter W=32)(
         is_FPU=1'b0;
         ALUOp=2'b00;
         case (Opcode)
-            7'b0110011: begin
+            7'b0110011: begin       //R-type: ADD, SUB, OR, XOR...
                 ALUOp=2'b10;
                 RegWrite=1'b1;
                 ALUsrc=1'b0;
             end
-            7'b0010011: begin
-                ALUOp=2'b10;
+            7'b0010011: begin       //I-type: ANDI, ADDI...
+                ALUOp=2'b11;
                 RegWrite=1'b1;
                 ALUsrc=1'b1;
             end
-            7'b0000011: begin
+            7'b0000011: begin       //LW
                 is_LW=1'b1;
                 ALUOp=2'b00;
                 MemRead=1'b1;
@@ -68,7 +68,7 @@ module Main_Decoder #(parameter W=32)(
                 RegWrite=1'b1;
                 ALUsrc=1'b1;
             end
-            7'b0100011:begin
+            7'b0100011:begin        //SW
                 is_SW=1'b1;
                 ALUOp=2'b00;
                 MemWrite=1'b1;
@@ -77,27 +77,27 @@ module Main_Decoder #(parameter W=32)(
             7'b1100011: begin
                 ALUOp=2'b01;
                 Branch=1'b1;
-                if(Funct3==3'b000)begin
+                if(Funct3==3'b000)begin         //BEQ
                     is_BEQ=1'b1;
                 end
-                else if(Funct3==3'b001)begin
+                else if(Funct3==3'b001)begin    //BNE
                     is_BNE=1'b1;
                 end
-                else if(Funct3==3'b100)begin
+                else if(Funct3==3'b100)begin    //BLT
                     is_BLT=1'b1;
                 end
-                else if(Funct3==3'b101)begin
+                else if(Funct3==3'b101)begin    //BGE
                     is_BGE=1'b1;
                 end
             end
-            7'b1101111: begin
+            7'b1101111: begin                   //JAL
                 is_JAL=1'b1;
                 Branch=1'b1;
                 RegWrite=1'b1;
                 ALUOp=2'b00;
                 ALUsrc=1'b1;
             end
-            7'b1100111: begin
+            7'b1100111: begin                   //JALR
                 is_JALR=1'b1;
                 Branch=1'b1;
                 RegWrite=1'b1;

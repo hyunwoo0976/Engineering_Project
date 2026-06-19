@@ -1,0 +1,23 @@
+C++ 컴파일러
+
+MSYS2 공식 홈페이지(msys2.org) 에 접속
+msys2-x86_64-xxxxxxxx.exe 다운
+다운받은 설치 파일을 실행하고, 아무것도 건드리지 말고 Next만 계속 눌러서 설치
+
+
+들어가서
+pacman -S mingw-w64-ucrt-x86_64-gcc
+
+Proceed with installation? [Y/n] 하면 Y
+
+
+윈도우 환경변수 설정
+[시스템 환경 변수 편집]
+[환경변수(N)]클릭
+[새로만들기]->C:\msys64\ucrt64\bin 경로지정
+확인 후 탭 종료
+
+
+최종확인
+VSCode-> 터미널창 
+    g++ --version입력
