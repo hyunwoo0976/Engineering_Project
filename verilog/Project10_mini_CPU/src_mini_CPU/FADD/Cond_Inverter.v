@@ -6,12 +6,12 @@ module Cond_Inverter #(parameter W=32)(
 );
     always @(*)begin
         if(eff_sub)begin
-            FRAC_cla_B=~FRAC_B;
-            Cin=1'b1;
+            FRAC_cla_B = ~FRAC_B;
+            Cin = 1'b1;
         end
         else begin
-            FRAC_cla_B=FRAC_B;
-            Cin=1'b0;
+            FRAC_cla_B = FRAC_B;
+            Cin = 1'b0;
         end
     end
 endmodule

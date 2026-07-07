@@ -9,7 +9,7 @@ module SIGN(
                 result_SIGN = SIGN_A;
             end 
             else begin
-                result_SIGN = (bigger) ? SIGN_A : ~SIGN_A; 
+                result_SIGN = (bigger) ? ~SIGN_A : SIGN_A; 
             end
         end 
         else begin 
@@ -17,7 +17,7 @@ module SIGN(
                 result_SIGN = SIGN_A;
             end 
             else begin
-                result_SIGN = (bigger) ? SIGN_A : SIGN_B;
+                result_SIGN = (bigger) ? SIGN_B : SIGN_A;
             end
         end
     end

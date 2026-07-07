@@ -71,7 +71,7 @@ module FMUL_core #(parameter W=32)(
     Pipe_reg_1clk_en #(.W(1)) reg_SIGN_A_s1_s2(.clk(clk), .reset(reset), .en(s1_en), .D(s1_SIGN_A), .Q(s2_SIGN_A));
     Pipe_reg_1clk_en #(.W(1)) reg_SIGN_B_s1_s2(.clk(clk), .reset(reset), .en(s1_en), .D(s1_SIGN_B), .Q(s2_SIGN_B));
 
-    MUL_SIGN sign_cal(
+    MUL_SIGN s2_u_mul_sign(
         .SIGN_A(s2_SIGN_A),
         .SIGN_B(s2_SIGN_B),
         .SIGN(s2_SIGN)
@@ -86,7 +86,7 @@ module FMUL_core #(parameter W=32)(
     Pipe_reg_1clk_en #(.W(8)) reg_EXPO_A_s1_s2(.clk(clk), .reset(reset), .en(s1_en), .D(s1_EXPO_A), .Q(s2_EXPO_A));
     Pipe_reg_1clk_en #(.W(8)) reg_EXPO_B_s1_s2(.clk(clk), .reset(reset), .en(s1_en), .D(s1_EXPO_B), .Q(s2_EXPO_B));
     
-    MUL_EXPO_ADD expo_add(
+    MUL_EXPO_ADD s2_u_mul_expo_add(
         .EXPO_A(s2_EXPO_A),
         .EXPO_B(s2_EXPO_B),
         .EXPO_ADD(s2_EXPO_ADD)
@@ -95,7 +95,7 @@ module FMUL_core #(parameter W=32)(
     Pipe_reg_1clk_en #(.W(9)) reg_EXPO_ADD_s2_s3(.clk(clk), .reset(reset), .en(s2_en), .D(s2_EXPO_ADD), .Q(s3_EXPO_ADD));
     Pipe_reg_1clk_en #(.W(9)) reg_EXPO_ADD_s3_s4(.clk(clk), .reset(reset), .en(s3_en), .D(s3_EXPO_ADD), .Q(s4_EXPO_ADD));
 
-    MUL_EXPO mul_expo(
+    MUL_EXPO s4_u_mul_expo(
         .EXPO_ADD(s4_EXPO_ADD),
         .count(s4_count),
         .round_carry(s4_round_carry),
@@ -117,7 +117,7 @@ module FMUL_core #(parameter W=32)(
     Pipe_reg_1clk_en #(.W(23)) reg_FRAC_A_s1_s2(.clk(clk), .reset(reset), .en(s1_en), .D(s1_FRAC_A), .Q(s2_FRAC_A));
     Pipe_reg_1clk_en #(.W(23)) reg_FRAC_B_s1_s2(.clk(clk), .reset(reset), .en(s1_en), .D(s1_FRAC_B), .Q(s2_FRAC_B));
 
-    Multiplier #(.W(48)) frac_mul(
+    Multiplier #(.W(48)) s2_u_multiplier(
         .FRAC_A({1'b1,s2_FRAC_A}),
         .FRAC_B({1'b1,s2_FRAC_B}),
         .FRAC_mul(s2_FRAC_mul)
@@ -126,7 +126,7 @@ module FMUL_core #(parameter W=32)(
     Pipe_reg_1clk_en #(.W(48)) reg2_FRAC_mul_s2_s3 (.clk(clk), .reset(reset), .en(s2_en), .D(s2_FRAC_mul), .Q(s3_FRAC_mul));
     Pipe_reg_1clk_en #(.W(48)) reg3_FRAC_mul_s3_s4 (.clk(clk), .reset(reset), .en(s3_en), .D(s3_FRAC_mul), .Q(s4_FRAC_mul));
 
-    Normalization_MUL #(.W(48)) s4_frac_nor(
+    Normalization_MUL #(.W(48)) s4_u_normalization_mul(
         .FRAC_mul(s4_FRAC_mul),
         .FRAC_out(s4_FRAC),
         .rm(s4_rm),
@@ -141,7 +141,7 @@ module FMUL_core #(parameter W=32)(
     Pipe_reg_1clk_en #(.W(23)) reg5_FRAC_s5_s6(.clk(clk), .reset(reset), .en(s5_en), .D(s5_FRAC), .Q(s6_FRAC));
 
     //==============================================================
-    Exception_Handler #(.W(32)) s6_final(
+    Exception_Handler #(.W(32)) s6_u_FMUL_exception_handler(
         .SIGN(s6_SIGN),
         .EXPO(s6_EXPO),
         .FRAC(s6_FRAC),
