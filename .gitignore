@@ -1,0 +1,40 @@
+# ===== Secrets =====
+.mcp.json
+.env
+
+# ===== Verilog / simulation outputs =====
+*.out
+*.vcd
+*.log
+
+# ===== Visual Studio (C++) =====
+.vs/
+x64/
+Win32/
+Debug/
+Release/
+*.obj
+*.pdb
+*.ilk
+*.exp
+*.idb
+*.ipch
+*.suo
+*.user
+*.tlog
+*.lastbuildstate
+
+# ===== Executables =====
+# 배포용 실행파일을 커밋하려면 아래처럼 예외 추가:
+#   !path/to/keep.exe
+*.exe
+
+# ===== Python =====
+__pycache__/
+*.pyc
+chromedriver-win64/
+
+# ===== OS files =====
+.DS_Store
+Thumbs.db
+desktop.ini

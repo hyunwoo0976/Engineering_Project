@@ -52,28 +52,48 @@ module FPU_tb #(parameter W=32);
         Stage_in = 1'b0;
 
         #9;
-        EX_FPU_en = 1'b1;
         
         reset = 1'b0;
 
-        @(negedge clk);
+        @(posedge clk);
+        EX_FPU_en = 1'b1;
         Stage_in = 1'b1;
         EX_F_A = 32'h4069999A;
         EX_F_B = 32'h3FA6CA66;
         EX_FPU_Control = 2'b10;
        
-        @(negedge clk);
+        @(posedge clk);
+        EX_FPU_en = 1'b0;
         EX_F_A = 32'h4069999A;
         EX_F_B = 32'h3FA6CA66;
         EX_FPU_Control = 2'b01;
         
-        @(negedge clk);
+        @(posedge clk);
+        EX_FPU_en = 1'b1;
         EX_F_A = 32'h4069999A;
         EX_F_B = 32'h3FA6CA66;
         EX_FPU_Control = 2'b00;
 
+        @(posedge clk);
+        EX_FPU_en = 1'b1;
+        EX_F_A = 32'h4069999A;
+        EX_F_B = 32'h3FA6CA66;
+        EX_FPU_Control = 2'b10;
 
-        #100;
+        @(posedge clk);
+        EX_FPU_en = 1'b0;
+        EX_F_A = 32'h4069999A;
+        EX_F_B = 32'h3FA6CA66;
+        EX_FPU_Control = 2'b01;
+
+        @(posedge clk);
+        EX_FPU_en = 1'b1;
+        EX_F_A = 32'h4069999A;
+        EX_F_B = 32'h3FA6CA66;
+        EX_FPU_Control = 2'b10;
+
+
+        #500;
         EX_FPU_en = 1'b0;
 
         #30;

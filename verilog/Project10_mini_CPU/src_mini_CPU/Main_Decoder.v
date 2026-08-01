@@ -13,10 +13,12 @@ module Main_Decoder #(parameter W=32)(
     output [4:0]rs1,rs2,
     output [4:0]rd,
     output reg [1:0]ALUOp,
-    output reg is_FPU,
+    output reg is_FPU,is_FLW, is_FSW,
     output reg is_LW,is_SW,
     output reg is_BEQ,is_BNE, is_BLT, is_BGE,
-    output reg is_JAL, is_JALR
+    output reg is_JAL, is_JALR,
+    output reg uses_Rs1, uses_Rs2,
+    output reg uses_FRs1, uses_FRs2
 );
     wire [6:0]Funct7 = instruction[31:25];
     wire [4:0]Rs2 = instruction[24:20];
@@ -46,19 +48,23 @@ module Main_Decoder #(parameter W=32)(
         {is_LW, is_SW} = 2'b00;
         {is_BEQ, is_BNE, is_BLT, is_BGE} = 4'b0000;
         {is_JAL, is_JALR} = 2'b00;
-        {RegWrite, MemWrite, MemRead, Branch, ALUsrc, MemtoReg, FRegWrite}=7'b0;
-        is_FPU=1'b0;
+        {RegWrite, MemWrite, MemRead, Branch, ALUsrc, MemtoReg}=6'b0;
+        {is_FPU, is_FLW, is_FSW, FRegWrite}=4'b0;
+        {uses_Rs1, uses_Rs2} = 2'b00;
+        {uses_FRs1, uses_FRs2} = 2'b00;
         ALUOp=2'b00;
         case (Opcode)
             7'b0110011: begin       //R-type: ADD, SUB, OR, XOR...
                 ALUOp=2'b10;
                 RegWrite=1'b1;
                 ALUsrc=1'b0;
+                {uses_Rs1, uses_Rs2} = 2'b11;
             end
             7'b0010011: begin       //I-type: ANDI, ADDI...
                 ALUOp=2'b11;
                 RegWrite=1'b1;
                 ALUsrc=1'b1;
+                {uses_Rs1, uses_Rs2} = 2'b10;
             end
             7'b0000011: begin       //LW
                 is_LW=1'b1;
@@ -67,16 +73,33 @@ module Main_Decoder #(parameter W=32)(
                 MemtoReg=1'b1;
                 RegWrite=1'b1;
                 ALUsrc=1'b1;
+                {uses_Rs1, uses_Rs2} = 2'b10;
+            end
+            7'b0000111: begin       //FLW
+                is_FLW = 1'b1;
+                MemRead = 1'b1;
+                MemtoReg = 1'b1;    
+                FRegWrite = 1'b1;
+                ALUsrc = 1'b1;
+                {uses_Rs1, uses_FRs2} = 2'b10;
             end
             7'b0100011:begin        //SW
                 is_SW=1'b1;
                 ALUOp=2'b00;
                 MemWrite=1'b1;
                 ALUsrc=1'b1;
+                {uses_Rs1, uses_Rs2} = 2'b11;
+            end
+            7'b0100111: begin       //FSW
+                is_FSW = 1'b1;
+                MemWrite = 1'b1;
+                ALUsrc = 1'b1;
+                {uses_Rs1, uses_FRs2} = 2'b11;
             end
             7'b1100011: begin
                 ALUOp=2'b01;
                 Branch=1'b1;
+                {uses_Rs1, uses_Rs2} = 2'b11;
                 if(Funct3==3'b000)begin         //BEQ
                     is_BEQ=1'b1;
                 end
@@ -96,6 +119,7 @@ module Main_Decoder #(parameter W=32)(
                 RegWrite=1'b1;
                 ALUOp=2'b00;
                 ALUsrc=1'b1;
+                {uses_Rs1, uses_Rs2} = 2'b00;
             end
             7'b1100111: begin                   //JALR
                 is_JALR=1'b1;
@@ -103,15 +127,19 @@ module Main_Decoder #(parameter W=32)(
                 RegWrite=1'b1;
                 ALUsrc=1'b1;
                 ALUOp=2'b00;
+                {uses_Rs1, uses_Rs2} = 2'b10;
             end
-            7'b1010011: begin
-                if(Funct5 == 5'b10100) begin
+            7'b1010011: begin                   //FPU
+            {uses_FRs1, uses_FRs2} = 2'b11;
+                if(Funct5 == 5'b10100) begin    //FP-comparison
                     RegWrite = 1'b1;
                     is_FPU = 1'b1;
+                    {uses_FRs1, uses_FRs2} = 2'b11;
                 end
                 else begin
                     FRegWrite = 1'b1;
                     is_FPU = 1'b1;
+                    {uses_FRs1, uses_FRs2} = 2'b11;
                 end
             end
 

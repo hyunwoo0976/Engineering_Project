@@ -4,7 +4,8 @@ module Normalization_Controller#(parameter W=32)(
     input eff_sub,
     output reg [7:0]count,
     output reg direction,doing,
-    output [W:0]nor_FRAC
+    output [W:0]nor_FRAC,
+    output reg EXPO_break
 );
     wire [5:0]lzd_count;
     wire all_zero;
@@ -18,14 +19,16 @@ module Normalization_Controller#(parameter W=32)(
     );
 
     always @(*)begin
-        count=0;
-        direction=0;
-        doing=0;
+        count=8'b0;
+        direction=1'b0;
+        doing=1'b0;
+        EXPO_break = 1'b0;
         if(eff_sub)begin
             if(all_zero)begin
                 doing=0;
                 direction=0;
                 count=0;
+                EXPO_break = 1'b1;
             end
             else begin
                 count={2'b0, lzd_count};

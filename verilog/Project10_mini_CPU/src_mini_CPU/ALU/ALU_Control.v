@@ -52,7 +52,7 @@ module ALU_Control #(parameter W=32)(
                         ALU_Control = 4'b0010;
                     end
                     3'b111:begin                                            //ANDI
-                        ALU_Control = 4'b0110;
+                        ALU_Control = 4'b0000;
                     end
                 endcase
             end

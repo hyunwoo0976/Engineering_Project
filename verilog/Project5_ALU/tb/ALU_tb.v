@@ -7,7 +7,7 @@ module ALU_tb#(parameter N=4);
     wire cout;
 
     initial begin
-        $monitor("mode=%b | a=%b, b=%b, cin=%b | sum=%b, result=%b", mode, x, y, cin, result, cout);
+        $monitor("mode=%b | a=%b, b=%b, cin=%b | sum=%b, cout=%b", mode, x, y, cin, result, cout);
     end
 
     initial begin

@@ -22,7 +22,7 @@ module Register_file #(parameter W=32)(
         end
     end
 
-    assign Rs1_data = (Rs1_addr == 5'd0) ? 32'b0 : mem[Rs1_addr];
-    assign Rs2_data = (Rs2_addr == 5'd0) ? 32'b0 : mem[Rs2_addr];
+    assign Rs1_data = (Rs1_addr == 5'd0) ? 32'b0 : (we && we_addr==Rs1_addr) ? we_data : mem[Rs1_addr];
+    assign Rs2_data = (Rs2_addr == 5'd0) ? 32'b0 : (we && we_addr==Rs2_addr) ? we_data : mem[Rs2_addr];
     assign Rt_data = (Rt_addr == 5'd0) ? 32'b0 : mem[Rt_addr];
 endmodule

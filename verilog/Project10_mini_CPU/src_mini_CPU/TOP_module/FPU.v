@@ -118,6 +118,7 @@ module FPU #(parameter W=32)(
         .error(s6_error),
         .Final_out(s6_final_out)
     );
+
     Pipe_reg_1clk #(.W(1)) reg_OF(.clk(clk), .reset(reset), .D(s6_OF), .Q(OF));
     Pipe_reg_1clk #(.W(1)) reg_sign(.clk(clk), .reset(reset), .D(s6_sign), .Q(sign));
     Pipe_reg_1clk #(.W(1)) reg_ZF(.clk(clk), .reset(reset), .D(s6_ZF), .Q(ZF));

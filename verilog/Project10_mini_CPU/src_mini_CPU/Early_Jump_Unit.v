@@ -7,7 +7,7 @@ module Early_Jump_Unit #(parameter W=32)(
 );
     wire [W-1:0] JAL_add = Imm + pc;
 
-
+ 
     always @(*) begin
         PCSrc = 1'b0;
         Early_Target = 32'b0;

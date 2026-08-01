@@ -36,8 +36,10 @@ module FADD_core #(parameter W=32)(
     // ====== [Stage 4] ========================================================================
     wire [48:0]s4_FRAC_nor_FRAC;
     wire [47:0]s4_FRAC_Sum;
+    wire s4_EXPO_break;
 
     wire [7:0]s4_EXPO_big, s4_FRAC_nor_count;
+    wire s4_eff_sub;
 
     wire s4_FRAC_Cout, s4_FRAC_nor_direction, s4_FRAC_nor_doing, s4_final_SIGN;
     wire s4_op;
@@ -47,6 +49,7 @@ module FADD_core #(parameter W=32)(
     wire [8:0]s5_EXPO;
     wire [7:0]s5_FRAC_nor_count;
     wire [7:0]s5_EXPO_big;
+    wire s5_EXPO_break;
 
     wire s5_FRAC_nor_direction, s5_FRAC_nor_doing, s5_final_SIGN;
     wire s5_op;
@@ -59,6 +62,7 @@ module FADD_core #(parameter W=32)(
     wire [22:0]s6_final_FRAC;
 
     wire [8:0]s6_EXPO, s6_final_EXPO;
+    wire s6_EXPO_break;
 
     wire s6_Rounding_count, s6_final_SIGN;
 
@@ -149,14 +153,17 @@ module FADD_core #(parameter W=32)(
 
     Pipe_reg_1clk_en #(.W(48))reg3_FRAC_Sum_s3_s4(.clk(clk), .reset(reset), .en(s3_en), .D(s3_FRAC_SUM), .Q(s4_FRAC_Sum));
     Pipe_reg_1clk_en #(.W(1))reg3_FRAC_Cout_s3_s4(.clk(clk), .reset(reset), .en(s3_en), .D(s3_FRAC_Cout), .Q(s4_FRAC_Cout));
+    Pipe_reg_1clk_en #(.W(1))reg3_FRAC_eff_sub_s3_s4(.clk(clk), .reset(reset), .en(s3_en), .D(s3_eff_sub), .Q(s4_eff_sub));
 
     Normalization_Controller#(.W(48)) s4_u_normalization_controller(
         .Sum(s4_FRAC_Sum),
         .Cout(s4_FRAC_Cout),
         .nor_FRAC(s4_FRAC_nor_FRAC),
+        .eff_sub(s4_eff_sub),
         .count(s4_FRAC_nor_count),
         .direction(s4_FRAC_nor_direction),
-        .doing(s4_FRAC_nor_doing)
+        .doing(s4_FRAC_nor_doing),
+        .EXPO_break(s4_EXPO_break)
     );
 // ======================================[stage 5]====================================================
 
@@ -214,6 +221,7 @@ module FADD_core #(parameter W=32)(
 
 // ======================================[stage 5]====================================================
     Pipe_reg_1clk_en #(.W(8))reg4_EXPO_s4_s5(.clk(clk), .reset(reset), .en(s4_en), .D(s4_EXPO_big), .Q(s5_EXPO_big));
+    Pipe_reg_1clk_en #(.W(1))reg4_EXPO_break_s4_s5(.clk(clk), .reset(reset), .en(s4_en), .D(s4_EXPO_break), .Q(s5_EXPO_break));
     
     EXPO_CAL #(.W(9)) s5_u_expo_cal(
         .EXPO_in({1'b0,s5_EXPO_big}),
@@ -224,9 +232,11 @@ module FADD_core #(parameter W=32)(
     );
 // ======================================[stage 6]====================================================
     Pipe_reg_1clk_en #(.W(9))reg5_EXPO_s5_s6(.clk(clk), .reset(reset), .en(s5_en), .D(s5_EXPO), .Q(s6_EXPO));
+    Pipe_reg_1clk_en #(.W(1))reg5_EXPO_break_s5_s6(.clk(clk), .reset(reset), .en(s5_en), .D(s5_EXPO_break), .Q(s6_EXPO_break));
 
     EXPO_MUX #(.W(9)) s6_u_expo_mux(
         .EXPO_in(s6_EXPO),
+        .EXPO_break(s6_EXPO_break),
         .count(s6_Rounding_count),
         .EXPO_out(s6_final_EXPO)
     );
