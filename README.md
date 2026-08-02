@@ -1,8 +1,8 @@
 # Engineering Project — Digital Design & Verification
 
-RTL design and verification work, built toward a career as a **Digital Design Verification (DV) engineer**.
+RTL design and verification work, built toward a career in **digital IC design or design verification (DV)**. I'm developing both sides in depth — architecting the hardware, then verifying it rigorously — and keeping both paths open.
 
-The centrepiece is a **32-bit RISC-V pipelined CPU with an IEEE-754 floating-point unit**, verified with self-checking and constrained-random testbenches.
+The centrepiece is a **32-bit RISC-V pipelined CPU with an IEEE-754 floating-point unit** — designed from the microarchitecture up, then verified with self-checking, constrained-random, and reference-model (ISS) testbenches.
 
 > **Where to start:** [`verilog/Project10_mini_CPU`](verilog/Project10_mini_CPU) — the main project.
 > Projects 1–9 are the building blocks that lead into it.
