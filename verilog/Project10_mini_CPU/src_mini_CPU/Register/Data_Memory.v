@@ -14,7 +14,7 @@ module Data_Memory #(parameter W=32)(
 
     always @(posedge clk)begin
         if(MemWrite)begin
-            mem[addr >> 2]<=write_data;
+            mem[addr >> 2] <= write_data;
         end
     end
     

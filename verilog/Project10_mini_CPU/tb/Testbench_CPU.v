@@ -52,22 +52,24 @@ module Testbench_CPU #(parameter W=32);
 
         repeat(100) @(posedge clk); // 충분히 오래 (16+5보다 훨씬 많이)
 
-        check(1,  -4);
-        check(2,   5);
-        check(3,   1);
-        check(4,   3);
-        check(5,   2);
-        check(6,  -1);
-        check(7,   1);
-        check(8,  12);   // 3<<2  (아까 고친 값!)
-        check(9,  16);   // 2<<3
-        check(10,  1);   // srl을 x3로 고쳤다면
-        check(11,  1);
+        check(1,  9);
+        check(2,  11);
+        check(3,  20);
+        check(4,  1);
+        check(5,  9);
+        check(6,  -10);
+        check(7,  -1);
+        check(8,  -30);
+        check(9,  30);
+        check(10, 31);
+        check(11, 30);
         check(12, -2);
-        check(13,  1);
-        check(14,  2);
-        check(15,  1);
-        check(16,  2);
+        check(13, 27);
+        check(14, 27);
+        check(15, 0);
+        check(16, 100);
+        check(17, 27);
+        check(18, 127);
         
         $finish;
     end
