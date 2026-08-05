@@ -6,7 +6,7 @@ module Pipeline_CPU #(parameter W=32)(
     output [W-1:0]wb_data,
     output wb_FPU_OF, wb_FPU_UF,
     output [4:0]wb_rd,
-    output wb_regwrite
+    output wb_regwrite, wb_fregwrite
 );
 
     assign current_pc = IF_pc;
@@ -15,6 +15,7 @@ module Pipeline_CPU #(parameter W=32)(
     assign wb_FPU_OF = WB_FPU_OF;
     assign wb_FPU_UF = WB_FPU_UF;
     assign wb_regwrite = WB_RegWrite;
+    assign wb_fregwrite = WB_FRegWrite;
     assign wb_rd = WB_Rd;
 
 //------------------------------[wire]--------------------------------
@@ -123,6 +124,7 @@ module Pipeline_CPU #(parameter W=32)(
 
         //[FPU]
         .ID_is_FPU(ID_is_FPU),
+        .ID_is_FSW(ID_is_FSW),
         .EX_is_FPU(EX_is_FPU),
         .EX_is_FLW(EX_is_FLW),
         .FPU_Valid(EX_FPU_Valid),
@@ -256,7 +258,7 @@ module Pipeline_CPU #(parameter W=32)(
         //[ID sign]
         .Rs1_addr(ID_Rs1),
         .Rs2_addr(ID_Rs2),
-        .Rt_addr(ID_Rd),
+        .Rt_addr(ID_Rd), 
         .Rs1_data(ID_F_A),
         .Rs2_data(ID_F_B),
         .Rt_data()

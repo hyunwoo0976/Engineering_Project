@@ -1,1 +1,4 @@
-0000000b // 11 (raw value)
+63021ab1 // 2.4x10^21 (float IEEE-754)
+5d905439 // 1.3x10^18 (float IEEE-754)
+4039999a // 2.9 (float IEEE-754)
+40666666 // 3.6 (float IEEE-754)

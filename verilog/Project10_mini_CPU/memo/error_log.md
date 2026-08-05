@@ -336,11 +336,93 @@ E24(레지스터 파일 write-first, 거리-3 해저드)와 E25(ALU_Control ANDI
 
 ## [미해결 — 현재 진행중]
 
-### OPEN-1 · FPU_Valid 타이밍 정합 (검증 대기)
-- [증상] 다중 사이클 FPU에서 result가 준비되는 시점과 FPU_Valid strobe 정합 미검증
-- [측정] FPU latency = 입력 후 **7 clk**에 안정된 정답 (6 clk엔 과도기 쓰레기값)
-- [의심] FPU_Check.v:30 `FPU_Valid <= Rd[6][0]` (한 번 더 레지스터링) → 7clk 대비 1clk 늦을 소지
-- [할 일] 파형에서 EX_FPU_result vs FPU_Valid vs EX_fin_Rd 정렬 확인
+### OPEN-1 · FPU_Valid 타이밍 정합 — 해결 (2026-08-01)
+- [증상] 다중 사이클 FPU에서 result 준비 시점과 FPU_Valid strobe 정합
+- [측정] FPU latency = 입력 후 **7 clk**에 안정 (6 clk엔 과도기 쓰레기값)
+- [원인] FPU_Check `FPU_Valid <= Rd[6][0]`(등록)이라 **지연 8** → result/shadow(지연 7)보다 1clk 늦음
+- [수정] `assign FPU_Valid = Rd[6][0]`(조합, **지연 7**)로 shadow layer6·코어(7)에 정렬. **해결.**
+
+### OPEN-3 · FPU 통합 첫 시도 — 결과가 전부 틀림 (명령어 흐름은 정상, FP 데이터패스 의심) (조사중)
+- [파형] `img_m_CPU/CPU_OPEN3_FADD_FSUB_2clk.PNG` (FADD/FSUB 2클럭 첫 발견),
+  `img_m_CPU/CPU_OPEN3_FPU_IF_ID_stall.PNG` (FPU_IF_ID_stall·PCWrite 추가본 — 스톨 확인)
+  · FPU를 CPU에 붙여 처음 돌렸는데 **결과가 전체적으로 다 틀림.**
+- [명령어 흐름·스톨 = 정상] FADD/FSUB가 ID에 2클럭 머무는 건 **load-use 스톨**(fadd가 바로 앞 `flw` 결과를
+  써야 함) — 맞는 동작. 스톨 뒤에 다음 명령어가 제대로 들어오는 것도 파형으로 확인. **명령어 유실 없음.**
+  (처음엔 "FSUB이 사라진다"고 봤는데 다시 보니 정상 진행이었음. 스톨→다음명령어 순서 OK)
+- [그럼 범위 좁혀짐] 파이프라인 제어(스톨/flush/PC)는 정상이니, **결과가 틀린 건 FP 데이터패스**
+  = FP 오퍼랜드 라우팅 / FP 포워딩 / 결과선택 MUX / shadow_reg / FPU_Valid 정렬 / FP writeback 중 하나.
+- [할 일] CPU의 **FP 레지스터 파일 값**을 ISS 골든값(f1=1.5, f3=3.5 …)과 대조.
+  · 검증용: `WB_FRegWrite`+`WB_OUT` 로 **FP shadow 레지스터**를 하나 더 만들어 비교 (정수 때처럼)
+  · 파형: `wb_data`가 `wb_fregwrite=1`일 때 어떤 값을 어느 레지스터에 쓰는지 → ISS랑 비교
+  · 의심 1순위: FPU_Valid 정렬(방금 고침), shadow_reg가 제어신호를 결과와 같이 나르나, 결과선택 MUX
+  (참고: FPU_Check FSW for문 버그도 아직 열려 있음 → 아래 OPEN-4에서 터짐)
+
+### OPEN-4 · FSW에서 파이프라인 멈춤 + MemWrite=0 (FPU_Check FSW for문 버그로 추정) (조사중)
+- [파형] `img_m_CPU/CPU_OPEN4_FSW_ID_is_FSW_z.PNG`
+  FSW(`00A02827` = fsw f10, 16(x0)) 차례에 `FPU_IF_ID_stall=1`·`PCWrite=0`으로 **스톨이 걸린 채
+  안 풀림** → 뒤 명령어가 아예 안 들어옴. `MemWrite=0`이라 저장도 안 됨. `ID_is_FSW=z`(배선 누락)도 여기서 보임.
+- [해석] MemWrite=0은 **원인이 아니라 증상**. FSW가 스톨에 갇혀 ID에서 못 나감 → MEM 도달 못 함
+  → MemWrite 안 뜸(저장 X) + PC 멈춰서 파이프라인 정지. 한 방향으로 다 설명됨.
+- [원인 ① 확정 — 배선 누락] 파형에서 **`ID_is_FSW = z`(floating)** 발견. Pipeline_CPU의 Hazard_Unit
+  인스턴스에 **`.ID_is_FSW(ID_is_FSW)` 연결이 빠져** 있어 입력이 드라이버 없이 떠 있었다.
+  → FPU_Check의 `else if(ID_is_FSW)`가 z로 동작 → FSW 해저드 검출 불확정 → 쓰레기 스톨.
+  (z는 드라이버 없음. 우리가 계속 쓰던 "z=floating=포트 미연결" 그것)
+  → [수정] Hazard_Unit 인스턴스에 `.ID_is_FSW(ID_is_FSW)` 추가.
+- [원인 ② 아직 남음 — for문] 위를 고쳐서 ID_is_FSW=1이 들어오면, 이번엔 FPU_Check FSW 분기(~58행)에
+  **for문이 없어** 잔값 `x`(=7)로 `Rd[7]` 범위밖([0:6]) 접근 → FPU_Left 쓰레기. **둘 다 고쳐야 함.**
+  → [수정] FSW 분기를 FPU 분기처럼 `for(x=0;x<7;x=x+1)`로 감싸기 (Rs2만 검사).
+- [확인 필요] 둘 다 고친 뒤: FSW가 f10 준비되면 스톨 풀림 → MEM 도달 → MemWrite=1 → mem[16] 저장.
+  MemWrite=0은 원인이 아니라 증상(FSW가 MEM 못 감)이었음.
+- [교훈] `z`가 보이면 논리 뜯기 전에 **배선부터** 확인. 파형에 신호 하나 z로 뜬 게 결정적 단서였다.
+
+### OPEN-5 · ImmGen이 FLW/FSW immediate를 안 만듦 — opcode 케이스 누락 (원인 확정)
+- [파형] `img_m_CPU/CPU_OPEN5_ImmGen_FLW_imm0.PNG`
+  · FLW 구간(`Opcode=07`, `inst=00002087`)에서 **`imm_out = 00000000`**. offset이 있어야 하는데 0으로 나옴.
+  · FLW/FSW인데 ImmGen이 immediate를 0으로 뱉음 → 주소 = `rs1 + 0` → **offset이 통째로 무시됨.**
+- [증상] `flw f2, 4(x0)` 같은 게 mem[4]가 아니라 mem[0]을 읽음 (offset 4가 사라짐).
+  FP 로드 주소가 다 어긋나 → 로드값 쓰레기 → FADD/FSUB/FMUL 결과 전부 틀림 ("절망적"의 큰 원인 중 하나).
+- [확증] 실제 CPU 돌려보니 **f1(offset 0)만 PASS, 나머지 전부 FAIL.** offset 0인 f1은 mem[0]을 맞게
+  읽는데, f2(offset 4)·f7(offset 8)… 은 offset이 0으로 뭉개져 전부 mem[0]을 읽어서 틀림.
+  **"첫 로드(offset 0)만 통과, 나머지 다 실패"가 정확히 ImmGen offset 버그의 signature.**
+- [원인] ImmGen의 opcode별 `case`문에 **FLW(`0x07`)·FSW(`0x27`)가 없어** default(0)로 빠짐.
+  둘 다 I/S-type이라 immediate 위치는 lw/sw와 똑같은데, 케이스에 안 넣어둠.
+- [수정] ImmGen case에 추가 (lw/sw와 같은 위치):
+  · FLW(`0x07`, I-type): `imm = {{20{inst[31]}}, inst[31:20]}`  (lw 케이스에 opcode만 추가하면 됨)
+  · FSW(`0x27`, S-type): `imm = {{20{inst[31]}}, inst[31:25], inst[11:7]}`  (sw와 동일)
+- [교훈] **새 명령어(FLW/FSW)를 추가할 땐 손댈 곳이 여러 군데** — 디코더, ALU_Control/FPU_Control,
+  **ImmGen**, 그리고 배선(OPEN-4의 ID_is_FSW)까지. ImmGen을 빠뜨려서 offset이 0으로 샜다.
+  (inst_Generator에도 flw/fsw 추가해야 하는 것과 같은 맥락 — "명령어 하나 = 여러 모듈 손봄")
+
+### OPEN-6 · FP in-flight 해저드 정합 (fadd/fsub/fmul·FSW ← in-flight FP 결과) — 해결 (2026-08-05, all-pass)
+in-flight FP 결과를 바로 쓰는 케이스(`fadd f9 → fsub f10`, `fsub f10 → fsw f10` 등)에서 **버그 4개가 겹쳐** 있었음.
+공통 뿌리: in-flight FP 명령어 하나에 **검출·카운트·주입·스톨** 4곳을 다 안 맞춘 것.
+
+- **[버그1 · 검출 지각]** `img_m_CPU/CPU_OPEN6_5_FPU_Left000_EXRd_miss.PNG`
+    `FPU_Check`의 `if(ID_is_FPU)` for문이 시프트레지스터 `Rd[]`만 훑고 **지금 EX의 프로듀서(`EX_Rd`)를 안 봄**.
+    `fadd f9`(EX)→`fsub f10`(ID) back-to-back에서 f9는 아직 Rd[] 주입 전(posedge 대기)이라, `ID_Rs1=EX_Rd=09`인데 **`FPU_Left=000`**(111이어야).
+    → 수정: for문 밖에 `if(EX_is_FPU && EX_Rd==ID_Rs1/2) FPU_Left=3'd7;` (EX 프로듀서를 조합으로 검출).
+
+- **[버그2 · 재주입 데드락]** `img_m_CPU/CPU_OPEN6_6_Rd0next0_inject_kill.PNG`
+    FP 스톨이 `ID_EX_stall=1`(freeze)이라 프로듀서가 EX에 갇힘 → 주입(`Rd0_next=EX_Rd`)이 매 클럭 **재주입** → 시프트레지스터가 안 빠져 `FPU_6clk=1` **영구 스톨**.
+    (반대로 주입을 스톨로 게이팅하면 f9가 아예 증발해 x9까지 깨짐 — 둘 다 freeze가 원인.)
+    → 수정: `FPU_Hazard.v:28,35` FP 스톨을 `ID_EX_stall` → **`ID_EX_flush`**(버블). 프로듀서가 EX 빠져나가 배수됨.
+      주입은 `FPU_Check.v:14` `Rd0_next = EX_is_FPU ? {EX_Rd,1'b1} : 0` (스톨 무관 — 버블 클럭엔 EX_is_FPU=0이라 중복 자동방지).
+      ※ 힌트: 바로 밑 FLW 분기(`FPU_Hazard.v:47`)가 이미 flush를 쓰고 있었음.
+
+- **[버그3 · countdown 안 내려감]** `img_m_CPU/CPU_OPEN6_7_FPU_Left_le_bug.PNG` → 해결 `CPU_OPEN6_8_sol_countdown.PNG`
+    Rs1 for문 부등호가 `<=`(거꾸로). `FPU_Left`는 매 클럭 0에서 시작(조합, `:37`)이라 `6<=0`이 항상 거짓 → **111 한 클럭 뒤 000 추락**.
+    → 수정: `FPU_Check.v:48` `<=` → **`>`**, 카운트 `6-x`로 통일. FPU_Left가 7,6,5…0 매끄럽게 하강.
+
+- **[버그4 · FSW store 실패 = cascade FAIL의 뿌리]** `img_m_CPU/CPU_OPEN6_9_FSW_missing_EXRd.PNG`
+    `fsw f10`이 in-flight f10을 저장해야 하는데, **FSW 분기(`ID_is_FSW`)에도 버그1과 같은 EX_Rd 검출 누락**.
+    → FSW가 f10 준비 전 EX 진입 → `EX_is_FSW`·`imm`이 한 클럭 반짝하고 flush에 지워짐 → store 못 함
+    → `mem[16]=0` → `flw f12=0` → `f13,f15,f16,f18` 전부 잘못된 f12로 **cascade FAIL**(FP 계산 자체는 정확했음, f17만 f12 무관이라 PASS).
+    → 수정: FSW 분기(`FPU_Check.v:63~`)에도 `if(EX_is_FPU && EX_Rd==ID_Rs2) FPU_Left=3'd7;` + `6-x` (FPU 분기와 동일).
+
+- **[결과]** 정수+FP 통합 **x1~x18 all-pass** → `통합테스트_04_FPU.md`
+- **[교훈]** in-flight FP 명령어 하나엔 **검출(EX_Rd 조합비교)·카운트(6-x)·주입(스톨무관)·스톨(flush)** 4곳을 같이 맞춰야.
+    그리고 **FPU 분기(`ID_is_FPU`)와 FSW 분기(`ID_is_FSW`)는 별개** — 같은 수정을 둘 다 해야 함(버그4).
+    반복 실수: 등록/posedge 신호는 한 클럭 지각(OPEN-1 계열), 부등호 방향(max는 `>`), 스톨은 소비자(ID)만 잡고 프로듀서는 흘려보내기.
 
 ---
 

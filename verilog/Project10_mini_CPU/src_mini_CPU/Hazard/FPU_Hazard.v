@@ -17,22 +17,21 @@ module FPU_Hazard (
         .FPU_Valid(FPU_Valid), . FPU_6clk(FPU_6clk),
         .FPU_Left(FPU_Left),
         .Rs1(Rs1), .Rs2(Rs2)
-    );
+    ); 
 
     always @(*) begin
         {IF_ID_stall, ID_EX_stall, PCWrite} = 3'b001;
         ID_EX_flush = 1'b0;
-        
         if(FPU_6clk)begin
             IF_ID_stall = 1'b1;
-            ID_EX_stall = 1'b1;
+            ID_EX_flush = 1'b1;
             PCWrite = 1'b0;
         end
         else begin
             case (1'b1)
                 (FPU_Left != 3'b000): begin
                     IF_ID_stall = 1'b1;
-                    ID_EX_stall = 1'b1;
+                    ID_EX_flush = 1'b1;
                     PCWrite = 1'b0;
                 end
                 FPU_Valid :begin

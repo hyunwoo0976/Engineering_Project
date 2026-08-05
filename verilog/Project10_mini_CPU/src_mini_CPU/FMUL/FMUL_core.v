@@ -142,6 +142,8 @@ module FMUL_core #(parameter W=32)(
 
     //==============================================================
     Exception_Handler #(.W(32)) s6_u_FMUL_exception_handler(
+        .OF(s6_OF),
+        .UF(s6_UF),
         .SIGN(s6_SIGN),
         .EXPO(s6_EXPO),
         .FRAC(s6_FRAC),

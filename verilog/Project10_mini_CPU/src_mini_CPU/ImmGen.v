@@ -8,16 +8,16 @@ module ImmGen #(parameter W=32)(
         imm_out=32'b0;
         
         case (Opcode)
-            7'b0010011, 7'b0000011, 7'b1100111:begin
+            7'b0010011, 7'b0000011, 7'b0000111, 7'b1100111:begin                //(addi, andi), lw, FLW, jalr
                 imm_out = {{20{inst[31]}}, inst[31:20]};
             end
-            7'b0100011: begin
+            7'b0100011, 7'b0100111: begin                                       //sw, FSW
                 imm_out = {{20{inst[31]}}, inst[31:25], inst[11:7]};
             end
-            7'b1100011: begin
+            7'b1100011: begin                                       //branch
                 imm_out = {{20{inst[31]}}, inst[7], inst[30:25], inst[11:8], 1'b0};
             end
-            7'b1101111: begin
+            7'b1101111: begin                                       //JAL
                 imm_out = {{12{inst[31]}}, inst[19:12], inst[20], inst[30:21], 1'b0};
             end
             default: imm_out=32'b0;

@@ -5,7 +5,7 @@ module Testbench_CPU #(parameter W=32);
     wire [W-1:0]current_inst;
     wire [W-1:0]wb_data;
     wire [4:0]wb_rd;
-    wire wb_regwrite;
+    wire wb_fregwrite, wb_regwrite;
     wire wb_FPU_OF, wb_FPU_UF;
 
     always #5 clk = ~clk;
@@ -18,7 +18,7 @@ module Testbench_CPU #(parameter W=32);
     Pipeline_CPU #(.W(32))u_Pipeline_CPU(
         .clk(clk), .reset(reset),
         .current_pc(current_pc), .current_inst(current_inst),
-        .wb_data(wb_data), .wb_regwrite(wb_regwrite), .wb_rd(wb_rd),
+        .wb_data(wb_data), .wb_regwrite(wb_regwrite), .wb_fregwrite(wb_fregwrite), .wb_rd(wb_rd),
         .wb_FPU_OF(wb_FPU_OF), .wb_FPU_UF(wb_FPU_UF)
     );
         
@@ -30,7 +30,7 @@ module Testbench_CPU #(parameter W=32);
         end
     end
     always @(posedge clk) begin
-        if(wb_regwrite && wb_rd != 5'b0)begin
+        if((wb_fregwrite || wb_regwrite) && wb_rd != 5'b0)begin
             srf[wb_rd] <= wb_data;
         end
     end
@@ -52,24 +52,24 @@ module Testbench_CPU #(parameter W=32);
 
         repeat(100) @(posedge clk); // 충분히 오래 (16+5보다 훨씬 많이)
 
-        check(1,  9);
-        check(2,  11);
-        check(3,  20);
-        check(4,  1);
-        check(5,  9);
-        check(6,  -10);
-        check(7,  -1);
-        check(8,  -30);
-        check(9,  30);
-        check(10, 31);
-        check(11, 30);
-        check(12, -2);
-        check(13, 27);
-        check(14, 27);
-        check(15, 0);
-        check(16, 100);
-        check(17, 27);
-        check(18, 127);
+            check(1, 32'h63021AB1);   // f1
+            check(2, 32'h5D905439);   // f2
+            check(3, 32'h63022CBC);   // f3
+            check(4, 32'h630208A6);   // f4
+            check(5, 32'hE30208A6);   // f5
+            check(6, 32'h7F800000);   // f6
+            check(7, 32'h4039999A);   // f7
+            check(8, 32'h40666666);   // f8
+            check(9, 32'h40D00000);   // f9
+            check(10, 32'h40666666);   // f10
+            check(11, 32'h41BB3333);   // f11
+            check(12, 32'h40666666);   // f12
+            check(13, 32'hC039999A);   // f13
+            check(14, 32'h3F333330);   // f14
+            check(15, 32'hC1166666);   // f15
+            check(16, 32'hC0CFFFFF);   // f16
+            check(17, 32'h63BCA6B4);   // f17
+            check(18, 32'hC14FFFFF);   // f18
         
         $finish;
     end
