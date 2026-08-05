@@ -2,7 +2,11 @@
 #include <string>
 #include <cstdint>
 #include <vector>
-#include <iomanip> // setw, setfill 사용을 위해 필요
+#include <iomanip>
+#include <cstring> 
+#include <cfloat>   
+#include <cmath>    
+#include <cerrno>   
 
 // 기계어 코드와 원본 어셈블리어를 함께 묶어서 저장할 구조체
 struct InstructionRecord {
@@ -10,7 +14,7 @@ struct InstructionRecord {
     std::string asm_text;
 };
 
-// 레지스터 문자열("x1" 또는 "f1" 등)을 숫자(1 등)로 변환하는 함수 (숫자만 입력해도 정상 작동)
+// 레지스터 문자열("x1" 또는 "f1" 등)을 숫자(1 등)로 변환하는 함수
 int parseReg(const std::string& regStr) {
     if (regStr.empty()) return 0;
     if (regStr[0] == 'x' || regStr[0] == 'X' || regStr[0] == 'f' || regStr[0] == 'F') {
@@ -19,38 +23,55 @@ int parseReg(const std::string& regStr) {
     return std::stoi(regStr);
 }
 
-// 문자열이 완전한 숫자 형태인지 확인하는 함수
-bool isNumber(const std::string& s) {
-    if (s.empty()) return false;
-    size_t start = (s[0] == '-') ? 1 : 0;
-    if (start == s.length()) return false;
-    for (size_t i = start; i < s.length(); ++i) {
-        if (!std::isdigit(s[i])) return false;
+// 사용자 입력 문자열에서 'x10^'이나 '*10^'을 C++ 표준 'e' 표기법으로 변환해주는 전처리 함수
+std::string preprocessNumber(std::string s) {
+    // 공백 제거 (편의상)
+    // "2.4 x 10^21" 같은 형태를 처리하기 위해 x10^ 형태 치환
+    size_t pos;
+    while ((pos = s.find("x10^")) != std::string::npos) {
+        s.replace(pos, 4, "e");
     }
-    return true;
+    while ((pos = s.find("X10^")) != std::string::npos) {
+        s.replace(pos, 4, "e");
+    }
+    while ((pos = s.find("*10^")) != std::string::npos) {
+        s.replace(pos, 4, "e");
+    }
+    return s;
+}
+
+// 문자열이 유효한 숫자(정수 또는 실수)인지 확인하는 함수
+bool isNumberOrFloat(const std::string& s) {
+    if (s.empty()) return false;
+    std::string converted = preprocessNumber(s);
+    char* end = nullptr;
+    std::strtof(converted.c_str(), &end);
+    return end == converted.c_str() + converted.length();
 }
 
 // 프로그램 시작 시 출력할 사용설명서 함수
 void printManual() {
     std::cout << "==================================================\n";
-    std::cout << "            RISC-V Mini Assembler v1.6            \n";
+    std::cout << "            RISC-V Mini Assembler v2.0            \n";
     std::cout << "==================================================\n";
     std::cout << "[ 명령어 형식 안내 ]\n";
     std::cout << "1. R-type (add, sub, sll, srl, sra)\n";
     std::cout << "   -> 형식: 명령어 rd, rs1, rs2 (예: add x1 x2 x3)\n";
-    std::cout << "2. I-type (addi, andi, jalr, lw)\n";
-    std::cout << "   -> 형식: 명령어 rd, rs1, imm (예: addi x1 x2 20)\n";
-    std::cout << "3. S-type (sw)\n";
-    std::cout << "   -> 형식: sw rs2, rs1, imm    (예: sw x1 x2 4)\n";
+    std::cout << "2. I-type (addi, andi, jalr, lw, flw)\n";
+    std::cout << "   -> 형식: 명령어 rd, rs1, imm (예: flw f1 x2 20)\n";
+    std::cout << "3. S-type (sw, fsw)\n";
+    std::cout << "   -> 형식: 명령어 rs2, rs1, imm (예: fsw f1 x2 4)\n";
     std::cout << "4. B-type (beq, bne, blt, bge)\n";
     std::cout << "   -> 형식: 명령어 rs1, rs2, imm (예: beq x1 x2 16)\n";
     std::cout << "5. J-type (jal)\n";
     std::cout << "   -> 형식: jal rd, imm         (예: jal x1 100)\n";
     std::cout << "6. Floating-Point R-type (fadd, fsub, fmul)\n";
     std::cout << "   -> 형식: 명령어 rd, rs1, rs2 (예: fadd f1 f2 f3)\n";
-    std::cout << "7. 특별 명령어\n";
+    std::cout << "7. 특별 명령어 및 값 입력\n";
     std::cout << "   -> loop                      (출력: 0000006F)\n";
-    std::cout << "   -> 숫자만 입력 (예: 10)      (출력: 0000000A)\n";
+    std::cout << "   -> 정수 입력 (예: 10)        (출력: 0000000A)\n";
+    std::cout << "   -> 실수 입력 (예: 3.14, 2.4x10^21 등 지원)\n";
+    std::cout << "   * FPU 범위 초과 시 자동 Error 처리\n";
     std::cout << "--------------------------------------------------\n";
     std::cout << "입력을 마치고 변환하려면 'end'를 입력하세요.\n";
     std::cout << "==================================================\n\n";
@@ -80,10 +101,32 @@ int main() {
                 machine_code = 0x0000006F;
                 asm_line = "loop (jal x0, 0)";
             }
-            // 0-2. 숫자만 입력한 경우 (예: 10 -> 0000000A)
-            else if (isNumber(uop)) {
-                machine_code = static_cast<uint32_t>(std::stoul(uop));
-                asm_line = uop + " (raw value)";
+            // 0-2. 숫자(정수 또는 실수, x10^ 표기 포함)만 입력한 경우
+            else if (isNumberOrFloat(uop)) {
+                std::string processed = preprocessNumber(uop);
+
+                // 소수점('.')이나 지수 표기('e', 'E')가 포함되어 있으면 실수(IEEE 754)로 처리
+                if (processed.find('.') != std::string::npos || processed.find('e') != std::string::npos || processed.find('E') != std::string::npos) {
+                    errno = 0;
+                    char* endptr = nullptr;
+                    float f_val = std::strtof(processed.c_str(), &endptr);
+
+                    // FPU 표현 범위 초과(오버플로우/언더플로우) 체크
+                    if (errno == ERANGE || std::abs(f_val) > FLT_MAX || (f_val != 0.0f && std::abs(f_val) < FLT_MIN && errno == ERANGE)) {
+                        std::cout << "[Error] FPU 표현 범위를 초과했습니다! (허용 범위: 약 +/- 1.18e-38 ~ +/- 3.40e+38)\n";
+                        continue; // 명령어 입력을 다시 받음
+                    }
+
+                    uint32_t f_bits;
+                    std::memcpy(&f_bits, &f_val, sizeof(float)); // float 비트 패턴을 그대로 uint32_t로 복사
+                    machine_code = f_bits;
+                    asm_line = uop + " (float IEEE-754)";
+                }
+                else {
+                    // 정수 처리
+                    machine_code = static_cast<uint32_t>(std::stoul(processed));
+                    asm_line = uop + " (raw int value)";
+                }
             }
             // 1. J-type: jal rd, imm
             else if (uop == "jal") {
@@ -145,8 +188,8 @@ int main() {
 
                 machine_code = (funct7 << 25) | (rs2 << 20) | (rs1 << 15) | (funct3 << 12) | (rd << 7) | opcode;
             }
-            // 4. I-type: addi, andi, jalr, lw (rd, rs1, imm)
-            else if (uop == "addi" || uop == "andi" || uop == "jalr" || uop == "lw") {
+            // 4. I-type: addi, andi, jalr, lw, flw (rd, rs1, imm)
+            else if (uop == "addi" || uop == "andi" || uop == "jalr" || uop == "lw" || uop == "flw") {
                 std::string rd_str, rs1_str;
                 int imm;
                 std::cin >> rd_str >> rs1_str >> imm;
@@ -162,11 +205,12 @@ int main() {
                 else if (uop == "andi") { opcode = 0x13; funct3 = 0x7; }
                 else if (uop == "jalr") { opcode = 0x67; funct3 = 0x0; }
                 else if (uop == "lw") { opcode = 0x03; funct3 = 0x2; }
+                else if (uop == "flw") { opcode = 0x07; funct3 = 0x2; }
 
                 machine_code = ((imm & 0xFFF) << 20) | (rs1 << 15) | (funct3 << 12) | (rd << 7) | opcode;
             }
-            // 5. S-type: sw (rs2, rs1, imm)
-            else if (uop == "sw") {
+            // 5. S-type: sw, fsw (rs2, rs1, imm)
+            else if (uop == "sw" || uop == "fsw") {
                 std::string rs2_str, rs1_str;
                 int imm;
                 std::cin >> rs2_str >> rs1_str >> imm;
@@ -177,6 +221,8 @@ int main() {
 
                 uint32_t opcode = 0x23;
                 uint32_t funct3 = 0x2;
+                if (uop == "fsw") { opcode = 0x27; }
+
                 uint32_t imm_val = imm & 0xFFF;
                 uint32_t imm11_5 = (imm_val >> 5) & 0x7F;
                 uint32_t imm4_0 = imm_val & 0x1F;
