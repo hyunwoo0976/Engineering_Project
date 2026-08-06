@@ -1,4 +1,3 @@
-63021ab1 // 2.4x10^21 (float IEEE-754)
-5d905439 // 1.3x10^18 (float IEEE-754)
-4039999a // 2.9 (float IEEE-754)
-40666666 // 3.6 (float IEEE-754)
+40066666 // 2.1 (float IEEE-754)
+40733333 // 3.8 (float IEEE-754)
+41200000 // 10.0 (float IEEE-754)

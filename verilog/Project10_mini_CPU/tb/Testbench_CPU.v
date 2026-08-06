@@ -23,15 +23,22 @@ module Testbench_CPU #(parameter W=32);
     );
         
     reg [31:0] srf [0:31];
-    integer k;
+    reg [31:0] srf_f [0:31];
+
+    integer i, j;
     initial begin
-        for(k=0; k<31; k = k + 1)begin
-            srf[k] <= 0;
+        for(i=0; i<31; i = i + 1)begin
+            srf[i] <= 0;
+            srf_f[i] <= 0;
         end
     end
+
     always @(posedge clk) begin
-        if((wb_fregwrite || wb_regwrite) && wb_rd != 5'b0)begin
+        if((wb_regwrite) && wb_rd != 5'b0)begin
             srf[wb_rd] <= wb_data;
+        end
+        if((wb_fregwrite) && wb_rd != 5'b0)begin
+            srf_f[wb_rd] <= wb_data;
         end
     end
 
@@ -44,6 +51,15 @@ module Testbench_CPU #(parameter W=32);
         end
     endtask
 
+    task check_f;
+        input [4:0]  r;
+        input [31:0] exp;
+        begin
+            if (srf_f[r] !== exp) $display("[FAIL] x%0d = %h, exp %h", r, srf_f[r], exp);
+            else $display("[PASS] x%0d = %h", r, srf_f[r]);
+        end
+    endtask
+
     initial begin
         clk = 0; reset = 1;
 
@@ -51,25 +67,42 @@ module Testbench_CPU #(parameter W=32);
         reset = 0;
 
         repeat(100) @(posedge clk); // 충분히 오래 (16+5보다 훨씬 많이)
+            check(1, 20);
+            check(2, 22);
+            check(3, 2);
+            check(4, -2);
+            check(5, 20);
+            check(6, 18);
+            check(7, 18);
+            check(8, 22);
+            check(9, 4);
+            check(10, 22);
+            check(11, 42);
+            check(12, 62);
+            check(13, 4);
+            check(14, 8);
+            check(15, 0);
+            check(16, -8);
 
-            check(1, 32'h63021AB1);   // f1
-            check(2, 32'h5D905439);   // f2
-            check(3, 32'h63022CBC);   // f3
-            check(4, 32'h630208A6);   // f4
-            check(5, 32'hE30208A6);   // f5
-            check(6, 32'h7F800000);   // f6
-            check(7, 32'h4039999A);   // f7
-            check(8, 32'h40666666);   // f8
-            check(9, 32'h40D00000);   // f9
-            check(10, 32'h40666666);   // f10
-            check(11, 32'h41BB3333);   // f11
-            check(12, 32'h40666666);   // f12
-            check(13, 32'hC039999A);   // f13
-            check(14, 32'h3F333330);   // f14
-            check(15, 32'hC1166666);   // f15
-            check(16, 32'hC0CFFFFF);   // f16
-            check(17, 32'h63BCA6B4);   // f17
-            check(18, 32'hC14FFFFF);   // f18
+            $display("===================================================================");
+            
+            check_f(1, 32'h40066666);   // f1
+            check_f(2, 32'h40733333);   // f2
+            check_f(3, 32'h40BCCCCC);   // f3
+            check_f(4, 32'h40733332);   // f4
+            check_f(5, 32'hC0066666);   // f5
+            check_f(6, 32'hC08D1EB7);   // f6
+            check_f(7, 32'h41035C28);   // f7
+            check_f(8, 32'h40733332);   // f8
+            check_f(9, 32'h40FF5C27);   // f9
+            check_f(10, 32'h41200000);   // f10
+            check_f(11, 32'h4217FFFF);   // f11
+            check_f(12, 32'h43BDFFFF);   // f12
+            check_f(13, 32'h456D7FFF);   // f13
+            check_f(14, 32'h456D7FFF);   // f14
+            check_f(15, 32'h45ED7FFF);   // f15
+            check_f(16, 32'h00000000);   // f16
+            check_f(17, 32'hC5ED7FFF);   // f17
         
         $finish;
     end
