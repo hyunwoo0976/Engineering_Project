@@ -14,16 +14,16 @@ module CPU_Hazard(
         IF_ID_stall = 1'b0;
         ID_EX_stall = 1'b0;
         PCWrite = 1'b1;
-        if(ID_PCSrc)begin                   //JAL, Early Jump
-            IF_ID_flush = 1'b1;
-        end
-        else if(EX_PCSrc)begin              //branch
+        if(EX_PCSrc)begin                   //branch
             IF_ID_flush = 1'b1;
             ID_EX_flush = 1'b1;
         end
         else if(EX_is_JALR)begin            //JALR
             IF_ID_flush = 1'b1;
             ID_EX_flush = 1'b1;
+        end
+        else if(ID_PCSrc)begin              //JAL, Early Jump
+            IF_ID_flush = 1'b1;
         end
         else if((EX_MemRead &&  ID_RegWrite) && (EX_Rd !=5'b0) && ((EX_Rd == ID_Rs1) || (EX_Rd == ID_Rs2))) begin       //Load-USE(LW->JALR..)
             ID_EX_flush = 1'b1;

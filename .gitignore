@@ -38,3 +38,6 @@ chromedriver-win64/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# ===== 개인용 사이드 프로젝트 (깃허브에 올리지 않음) =====
+vibe_coding/

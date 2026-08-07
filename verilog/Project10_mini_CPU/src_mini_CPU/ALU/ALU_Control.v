@@ -28,7 +28,7 @@ module ALU_Control #(parameter W=32)(
                         ALU_Control=4'b1000;                                //SLL
                     end
                     3'b100:begin
-                        ALU_Control=4'b0000;                                //XOR
+                        ALU_Control=4'b0011;                                //XOR
                     end
                     3'b101:begin
                         if(funct7_bit30)begin

@@ -9,11 +9,11 @@ module PC_MUX #(parameter W=32)(
 
     always @(*) begin
         final_next_pc = next_pc;
-        if(ID_PCSrc) begin
-            final_next_pc = Early_Target;
-        end
-        else if(EX_PCSrc) begin
+        if(EX_PCSrc) begin
             final_next_pc = Target;
+        end
+        else if(ID_PCSrc) begin
+            final_next_pc = Early_Target;
         end
         else if(EX_is_JALR) begin
             final_next_pc = JALR_Target;

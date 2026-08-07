@@ -9,7 +9,7 @@
 ## [CPU 기본 / 명령어 메모리]
 
 ### E01 · program.txt 안 읽힘 (readmemh 실패)
-- [파형] img_m_CPU/CPU_Error1.명령서파일이 안읽혀짐.PNG / 콘솔: `Instruction_Memory.v:9 $readmemh: Unable to open program.txt`
+- [파형] img_m_CPU/CPU_Error1.명령서파일이_안읽혀짐.PNG / 콘솔: `Instruction_Memory.v:9 $readmemh: Unable to open program.txt`
 - [증상] instruction·address·result 전부 `xxxxxxxx`, CPU가 아무것도 실행 못 함
 - [원인] `$readmemh` 경로 문제. F_file 폴더에 명령어 파일을 넣어 경로가 꼬임 (memo/ERROR 기록)
   - 추가 주의: readmemh 경로가 실행 디렉토리 기준 상대경로(`./verilog/...`)라, 프로젝트 루트에서 실행해야 함
@@ -20,7 +20,7 @@
 ## [Hazard / 분기(JAL·JALR·Branch)]
 
 ### E02 · 주소값 무한 반복 (Early Jump 항상 점프)
-- [파형] img_m_CPU/CPU_Error2(해저드 유닛 전).JAL,나머지Branch추가하고 주소반복오류.PNG
+- [파형] img_m_CPU/CPU_Error2(해저드_유닛_전).JAL,나머지Branch추가하고_주소반복오류.PNG
   / 파형: Imm=6, Early_Target=0x12, is_JAL=1, PCSrc=1, pc=0xC
 - [증상] 주소가 00 → (04 ↔ 08) 식으로 계속 반복, 명령어도 반복 실행
 - [원인] Early_Jump_Unit: `assign PCSrc = (Early_Target) ? 1'b1 : 1'b0;`
@@ -28,7 +28,7 @@
 - [수정] if문으로 변경, **is_JAL일 때만** PCSrc 판정하도록
 
 ### E03 · BEQ 점프 위치 오류  ★git 확인 (commit 7a81d42)
-- [파형] img_m_CPU/CPU_Error2(해저드 유닛전).BEQ 점프 위치 오류 CPU_vvp.PNG
+- [파형] img_m_CPU/CPU_Error2(해저드_유닛전).BEQ_점프_위치_오류_CPU_vvp.PNG
 - [증상] BEQ 성립 시 점프 목적지 주소가 틀림
 - [원인] PC_MUX가 분기 타겟을 잘못 선택. 기존엔 단일 `PCSrc?Target:next_pc`라, ID단계 점프(JAL)와 EX단계 점프(분기)를 구분 못 함
   또한 PCSrc가 `ZF & is_BEQ`만 있어 다른 분기 미지원
@@ -36,7 +36,7 @@
   PCSrc는 `(ZF&is_BEQ)|(!ZF&is_BNE)|(sign&is_BLT)|(!sign&is_BGE)`로 확장
 
 ### E04 · B-type Immediate ×2 오류  ★git 확인 (commit 7b3d9a1)
-- [파형] img_m_CPU/CPU_Error3. B-type Immx2 오류.PNG
+- [파형] img_m_CPU/CPU_Error3._B-type_Immx2_오류.PNG
 - [증상] B-type(및 J-type) 분기 offset이 어긋남(사실상 ×2/정렬 오류)
 - [원인] ImmGen에서 B/J-type imm을 잘못 조립 — `inst[31]`을 중복으로 넣고, 맨 아래 LSB `1'b0`(바이트 오프셋의 내장 ×2)을 빠뜨림
   - 버그: `{{20{inst[31]}}, inst[31], inst[7], inst[30:25], inst[11:8]}`
@@ -44,8 +44,8 @@
   - 정상: `{{20{inst[31]}}, inst[7], inst[30:25], inst[11:8], 1'b0}`  (J-type도 동일하게 `..., 1'b0`)
 
 ### E05 · JAL 명령어 미수행 / Early Jump IMM 오류  ★git 확인 (commit 7a81d42→7b3d9a1)
-- [파형] img_m_CPU/CPU_Error3.JAL명령어 오류에 관해 Early Jump Unit IMM의 오류.PNG
-  , img_m_CPU/CPU_Error3.JAL명령어가 수행되지않고 명령어는 0, 점프해야하는 명령어가 수행되는 오류.PNG
+- [파형] img_m_CPU/CPU_Error3.JAL명령어_오류에_관해_Early_Jump_Unit_IMM의_오류.PNG
+  , img_m_CPU/CPU_Error3.JAL명령어가_수행되지않고_명령어는_0,_점프해야하는_명령어가_수행되는_오류.PNG
 - [증상] JAL이 수행돼야 하는데 명령어가 0으로 flush되고, 엉뚱한(점프 대상) 명령어가 실행됨
 - [원인] 두 버그가 겹침 —
   (1) Early_Jump_Unit `assign PCSrc=(Early_Target)?1:0` 이 항상 1 (commit 7a81d42에서 유입, E02와 동일)
@@ -54,7 +54,7 @@
 - [확인] memo/ERROR: "Hazard 유닛은 잘 작동되어 flush되서 0이 되고 pc=12인 00C0006F 다음 명령어 수행됨"
 
 ### E06 · JALR + stall/flush 미작동  ◐부분확인 (commit 7b3d9a1 JALR구현 → 71c9c89 FPU타이밍)
-- [파형] img_m_CPU/CPU_Error4(FPU포함) JALR과 stall연결후 flush와 stall이 제대로 작동안함.PNG
+- [파형] img_m_CPU/CPU_Error4(FPU포함)_JALR과_stall연결후_flush와_stall이_제대로_작동안함.PNG
   / 파형: is_JALR=1, ID_PCSrc=1, JAL_add=0xC, wb_FPU_OF=x, wb_FPU_UF=x(빨강, 미정의)
 - [증상] JALR을 stall과 연결한 뒤 flush/stall이 제대로 동작 안 함. wb_FPU_OF/UF가 x
 - [git] commit 7b3d9a1에서 JALR 배선(`.is_JALR(ID_is_JALR)` 연결, 이전엔 `.is_JALR()` 빈칸).
@@ -67,7 +67,7 @@
 - [수정] FPU .clk/.reset 연결(이미 수정됨). ※ 남은 의심 있으면 해당 파형 재확인으로 역추적
 
 ### E07 · BEQ 명령어 밀림  ✖오류아님 (관찰 착각)
-- [파형] img_m_CPU/CPU_Error4(FPU포함) BEQ, 명령어 밀림오류.PNG
+- [파형] img_m_CPU/CPU_Error4(FPU포함)_BEQ,_명령어_밀림오류.PNG
 - [증상] BEQ 전후로 명령어가 한 칸씩 밀려 보임
 - [결론] 실제 버그 아님. 모니터가 **IF단계 pc(IF_pc)와 ID단계 명령어(ID_inst)를 같이** 찍어서,
   서로 다른 스테이지라 자연히 한 칸 어긋나 보인 것 (정상 파이프라인 동작)
@@ -78,7 +78,7 @@
 ## [FPU 통합 — 포워딩]
 
 ### E08 · 포워딩 값 오류 (WB 포워딩이 ALU 결과만 전달)
-- [파형] img_m_CPU/CPU_Error4(FPU포함) 사진에 모듈들에는 아무 문제 없음, 포워딩 문제.PNG
+- [파형] img_m_CPU/CPU_Error4(FPU포함)_사진에_모듈들에는_아무_문제_없음,_포워딩_문제.PNG
 - [증상] 모듈 자체는 정상인데 포워딩된 값이 틀림 (특히 load/MemtoReg 결과)
 - [원인] ALU_port_MUX의 `.WB_value(WB_ALU_Result)` → WB 단계 포워딩이 ALU 결과만 전달, load(MemtoReg) 결과는 전달 못 함
   (Pipeline_CPU.v, ALU_port_MUX 연결)
@@ -213,7 +213,7 @@ ALU_port_MUX를 오퍼랜드 단위로 재작성한 새 MUX. 파형이 아니라
 - [교훈] 신호가 `z`로 뜨면 = 드라이버 없음 = 포트 미연결/미선언 의심 (`x`는 충돌/미초기화, `z`는 floating)
 
 ### E14 · 뺄셈(op=01) 오류 — 결과가 두 개 / result_out=x, error=x  ★근본원인 확인
-- [파형] img_m_CPU/FPU_ERROR3_ 뺄셈결과가 두개가 나오는 상황.PNG
+- [파형] img_m_CPU/FPU_ERROR3__뺄셈결과가_두개가_나오는_상황.PNG
   · 추가파형: "FSUB_결과두개_op01"(EX_FPU_Control=01, EX_FPU_Result 40966666→40066667 두 값)
   · 추가파형: "FSUB_result_x_op01"(op=01, IN_A=4185A640, IN_B=BC7C1070, result_out=3Fxxxxxx, error=x)
   · 근본원인파형: "FADD_core_eff_sub_floating"(Cin·Q·D·eff_sub 빨강=미정의)
@@ -423,6 +423,35 @@ in-flight FP 결과를 바로 쓰는 케이스(`fadd f9 → fsub f10`, `fsub f10
 - **[교훈]** in-flight FP 명령어 하나엔 **검출(EX_Rd 조합비교)·카운트(6-x)·주입(스톨무관)·스톨(flush)** 4곳을 같이 맞춰야.
     그리고 **FPU 분기(`ID_is_FPU`)와 FSW 분기(`ID_is_FSW`)는 별개** — 같은 수정을 둘 다 해야 함(버그4).
     반복 실수: 등록/posedge 신호는 한 클럭 지각(OPEN-1 계열), 부등호 방향(max는 `>`), 스톨은 소비자(ID)만 잡고 프로듀서는 흘려보내기.
+
+---
+
+## [통합테스트 06 — 전 명령어 + 중첩 JALR + 제어흐름/FP스톨 (all-pass, 2026-08-07)]
+상세 스토리: `통합테스트_06_전명령어_중첩JALR.md`. 61개 프로그램, **재실행 하나에서 7개 FAIL cascade**.
+
+### E26 · 명령어 메모리 오버플로 (wrap)
+- [파형] `CPU_T06_5_reexec_PCwrap_0x100.PNG`
+- [증상] 61개 프로그램에서 PC≥0x80이 wrap → `PC=0x88`인데 `0x08`(줄2) 명령어 출력, loop 도달 못 함
+- [원인] `Instruction_Memory.v`: `mem[0:31]` + `pc[6:2]` = 32칸뿐 (비트7↑ 무시)
+- [수정] `mem[0:63]` + `pc[7:2]` (64칸, PC 0~0xFC)
+
+### E27 · 분기 그림자 JAL 우선순위 (ID>EX 거꾸로)
+- [파형] `CPU_JAL_retaddr_wrong.PNG`
+- [증상] taken 분기가 0x50으로 가야 하는데, 그림자에 speculative fetch된 JAL(loop)한테 뺏겨 0x44로 감
+- [원인] `PC_MUX.v`/`CPU_Hazard.v` 우선순위가 `ID_PCSrc`(JAL) > `EX_PCSrc`(분기) → 어린 JAL이 오래된 분기를 이김
+- [수정] **EX_PCSrc / EX_is_JALR 우선 → ID_PCSrc 마지막** (오래된 EX 명령어가 어린 ID 것 이긴다)
+
+### E28 · FPU_6clk 1클럭 지각 → 정수/FP WB 충돌
+- [증상] 정수·FP 촘촘히 섞으면 정수 addi 결과가 0 (FP결과가 슬롯 덮음)
+- [원인] `FPU_Check.v`: `FPU_6clk <= Rd[5][0]`(등록) → `FPU_Valid`(조합)와 **동시**에 뜸 → 미리 버블 못 만듦
+- [수정] `assign FPU_6clk = Rd[5][0]`(조합화, Valid보다 1클럭 먼저). OPEN-1(FPU_Valid)과 같은 "등록 지각" 계열
+
+### E29 · ★JALR redirect가 FP 스톨(PCWrite=0)에 증발 → 재실행
+- [파형] `CPU_T06_6_JALR_target_ok.PNG`(타겟 0xDC 맞음), `CPU_T06_7_JALR_PCwrite0_ROOT.PNG`(PCWrite=0)
+- [증상] 중첩 SUB2의 jalr이 복귀 안 함 → 흐름이 프로그램 끝 지나 wrap → **처음부터 재실행** → x19/x20/x22/x26/x27/f11/f12 전부 오염 (x19=4×14 누산, x20=+0x300)
+- [원인] jalr 복귀 시 마침 SUB2의 `fadd f14`가 배수되며 스톨 → `PCWrite=0`. jalr이 `final_next_pc=0xDC` 정확히 계산해도 **PC가 안 실림**(딱 1클럭 놓침) → 0xF4로 흘러넘침
+- [수정] **redirect 시 PCWrite=1 강제**: `PCWrite = (EX_PCSrc||EX_is_JALR||ID_PCSrc) ? 1 : (스톨결과)`. redirect는 뒤 명령어 어차피 flush하니 스톨 무의미
+- [교훈] **제어 redirect는 스톨보다 우선.** "안 멈춤/재실행"은 개별 레지스터 버그처럼 보여도 뿌리는 PC 제어. 타겟 맞아도 PC 안 실리면 무용
 
 ---
 

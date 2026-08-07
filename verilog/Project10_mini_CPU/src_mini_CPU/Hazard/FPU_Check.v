@@ -4,7 +4,7 @@ module FPU_Check(
     input [4:0]ID_Rs1, ID_Rs2,
     input clk, reset,
     output FPU_Valid,
-    output reg FPU_6clk,  //FPU End
+    output FPU_6clk,  //FPU End
     output reg [2:0]FPU_Left,     //How many left
     output reg Rs1, Rs2
 );
@@ -20,16 +20,15 @@ module FPU_Check(
             for(i=0; i<7; i=i+1)begin
                 Rd[i][5:0] <= 6'b0;
             end
-            Rd[5][0] <= 1'b0;
         end
         else begin
             for(i=0; i<6; i=i+1)begin
                 Rd[i+1][5:0] <= Rd[i][5:0];
             end
             Rd[0][5:0] <= Rd0_next;
-            FPU_6clk <= Rd[5][0];
         end
     end
+    assign FPU_6clk = Rd[5][0]; 
     assign FPU_Valid = Rd[6][0];
 
     integer x;

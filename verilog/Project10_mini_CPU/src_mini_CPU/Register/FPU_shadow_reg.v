@@ -7,6 +7,7 @@ module FPU_shadow_reg #(parameter W=32)(
 );
     reg [W-1:0]FPU_7clk[0:6];
     reg [W-1:0]A;
+    reg [W-1:0]B;
 
     integer i;
     always @(posedge clk or posedge reset) begin
@@ -27,14 +28,24 @@ module FPU_shadow_reg #(parameter W=32)(
             end
         end
     end
+
+    always @(posedge clk or posedge reset) begin
+        if(reset)begin
+            A <= 0;
+        end
+        else if((EX_is_FPU == 1'b0) || FPU_Valid)begin
+            A <= D;
+        end
+    end
+    
     always @(*) begin
         if(EX_is_FPU == 1'b0)begin
-            A = D;
+            B = D;
         end
         else begin
-            A = {W{1'b0}};
+            B = {W{1'b0}};
         end
     end
 
-    assign Q = (FPU_Valid) ? FPU_7clk[6][W-1:0] : A;
+    assign Q = (FPU_Valid) ? FPU_7clk[6][W-1:0] : (EX_is_FPU == 1'b0) ? B : A;
 endmodule

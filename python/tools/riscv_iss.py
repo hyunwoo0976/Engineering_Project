@@ -12,7 +12,7 @@ DUT(파이프라인 CPU) 결과를 이 ISS 결과와 대조 → 일치하면 CPU
   - data.mem   : 워드 단위 초기값 (줄 N → 바이트주소 4N). FP는 비트패턴(3FC00000 등)
   → 실행 경로 + 정수/FP 레지스터를 check() 형태로 출력 (TB에 복붙)
 
-지원: addi, lw, sw, add, sub, beq/bne/blt/bge, jal, flw, fsw, fadd/fsub/fmul
+지원: addi/andi, lw, sw, add/sub/and/or/xor/sll/srl/sra, beq/bne/blt/bge, jal/jalr, flw, fsw, fadd/fsub/fmul
 """
 import struct, sys, os
 
@@ -87,9 +87,11 @@ def run(prog, mem):
         f7  = (ins >> 25) & 0x7F
         npc = pc + 4
 
-        if op == 0x13:                      # OP-IMM (addi)
+        if op == 0x13:                      # OP-IMM (addi, andi)
             if f3 == 0:
                 reg[rd] = (reg[rs1] + imm_i(ins)) & 0xFFFFFFFF
+            elif f3 == 7:                   # ANDI
+                reg[rd] = reg[rs1] & (imm_i(ins) & 0xFFFFFFFF)
         elif op == 0x03:                    # LOAD (lw)
             a = (reg[rs1] + imm_i(ins)) & 0xFFFFFFFF
             if f3 == 2:
@@ -98,10 +100,16 @@ def run(prog, mem):
             a = (reg[rs1] + imm_s(ins)) & 0xFFFFFFFF
             if f3 == 2:
                 mem[a] = reg[rs2] & 0xFFFFFFFF
-        elif op == 0x33:                    # OP (add/sub)
-            if f3 == 0:
-                reg[rd] = ((reg[rs1] - reg[rs2]) if f7 == 0x20
-                           else (reg[rs1] + reg[rs2])) & 0xFFFFFFFF
+        elif op == 0x33:                    # OP (add/sub/and/or/xor/sll/srl/sra)
+            a, b = reg[rs1], reg[rs2]
+            sh = b & 31
+            if   f3 == 0: reg[rd] = ((a - b) if f7 == 0x20 else (a + b)) & 0xFFFFFFFF
+            elif f3 == 7: reg[rd] = a & b                # AND
+            elif f3 == 6: reg[rd] = a | b                # OR
+            elif f3 == 4: reg[rd] = a ^ b                # XOR
+            elif f3 == 1: reg[rd] = (a << sh) & 0xFFFFFFFF   # SLL
+            elif f3 == 5:                                # SRL / SRA
+                reg[rd] = ((sx(a) >> sh) & 0xFFFFFFFF) if f7 == 0x20 else (a >> sh)
         elif op == 0x63:                    # BRANCH
             a, b = sx(reg[rs1]), sx(reg[rs2])
             take = (f3 == 0 and reg[rs1] == reg[rs2]) \
@@ -113,6 +121,10 @@ def run(prog, mem):
         elif op == 0x6F:                    # JAL
             reg[rd] = (pc + 4) & 0xFFFFFFFF
             npc = (pc + imm_j(ins)) & 0xFFFFFFFF
+        elif op == 0x67:                    # JALR
+            t = (reg[rs1] + imm_i(ins)) & 0xFFFFFFFE
+            reg[rd] = (pc + 4) & 0xFFFFFFFF
+            npc = t
         elif op == 0x07:                    # FLW (float load)
             a = (reg[rs1] + imm_i(ins)) & 0xFFFFFFFF
             if f3 == 2:

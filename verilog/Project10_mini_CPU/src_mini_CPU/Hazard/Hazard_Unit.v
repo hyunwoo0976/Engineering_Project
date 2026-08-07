@@ -45,6 +45,7 @@ module Hazard_Unit (
 
         .IF_ID_stall(IF_ID_stall), .ID_EX_stall(ID_EX_stall),
         .ID_EX_flush(ID_EX_flush),
+        .ID_PCSrc(ID_PCSrc), .EX_PCSrc(EX_PCSrc), .EX_is_JALR(EX_is_JALR),
 
         .PCWrite(PCWrite)
     );

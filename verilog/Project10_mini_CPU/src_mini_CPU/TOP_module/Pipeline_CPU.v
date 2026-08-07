@@ -59,7 +59,7 @@ module Pipeline_CPU #(parameter W=32)(
     wire [3:0] EX_ALU_Control;
     wire [1:0] EX_FPU_Control;
     wire EX_is_BEQ, EX_is_BNE, EX_is_BLT, EX_is_BGE;
-    wire EX_is_JALR, EX_is_SW;
+    wire EX_is_JALR, EX_is_JAL, EX_is_SW;
     wire [31:0] EX_A, EX_B, EX_F_A, EX_F_B;
     wire [31:0] EX_in_A, EX_in_B;
     wire [31:0] EX_imm;
@@ -290,7 +290,7 @@ module Pipeline_CPU #(parameter W=32)(
     );
     
 //------------------[Stage3: Execute(EX)]--------------------------
-    Pipe_reg_1clk_control #(.W(235)) u_ID_EX_reg(
+    Pipe_reg_1clk_control #(.W(236)) u_ID_EX_reg(
         .clk(clk), .reset(reset), .stall(ID_EX_stall), .flush(ID_EX_flush),
         .D({
             ID_pc,
@@ -307,6 +307,7 @@ module Pipeline_CPU #(parameter W=32)(
             ID_is_BLT,
             ID_is_BGE,
             ID_is_SW,
+            ID_is_JAL,
             ID_is_JALR,
             ID_is_FPU,
             ID_is_FLW,
@@ -340,6 +341,7 @@ module Pipeline_CPU #(parameter W=32)(
             EX_is_BLT,
             EX_is_BGE,
             EX_is_SW,
+            EX_is_JAL,
             EX_is_JALR,
             EX_is_FPU,
             EX_is_FLW,
@@ -359,6 +361,7 @@ module Pipeline_CPU #(parameter W=32)(
             EX_uses_FRs2
         })
     );
+    
     PC_Target #(.W(W))u_PC_Target(
         .pc(EX_pc),
         .imm(EX_imm),
@@ -367,11 +370,11 @@ module Pipeline_CPU #(parameter W=32)(
     port_MUX #(.W(W))u_port_MUX(
         .MEMtoEX_forward(MEMtoEX_forward), .WBtoEX_forward(WBtoEX_forward),
         .MEM_value(MEM_Result), .WB_value(WB_OUT),
-        .imm(EX_imm),
+        .imm(EX_imm), .EX_pc(EX_pc),
         .ALUsrc(EX_ALUsrc), .EX_is_FPU(EX_is_FPU), .EX_is_FSW(EX_is_FSW), .EX_is_SW(EX_is_SW),
         .EX_A(EX_A), .EX_B(EX_B),
         .EX_F_A(EX_F_A), .EX_F_B(EX_F_B),
-        .EX_is_JALR(EX_is_JALR),
+        .EX_is_JALR(EX_is_JALR), .EX_is_JAL(EX_is_JAL),
         .EX_in_A(EX_in_A), .EX_in_B(EX_in_B),
         .EX_read_data_B(EX_read_data_B)
     );
