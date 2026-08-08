@@ -45,6 +45,10 @@ The five classic stages run in order; the **FPU hangs off EX as a parallel multi
 and its result rejoins the pipeline 7 cycles later through a shadow register. Forwarding and hazard
 control wrap around the whole pipeline.
 
+> 📖 **Want to go deeper?** This README is the overview. For the full development storyline, a
+> module-by-module walkthrough, and every bug (symptom → waveform → root cause → fix), see the
+> detailed docs: **[한글](./memo/detailed_readme/README_KR.md)** · **[English](./memo/detailed_readme/README_EN.md)**
+
 ---
 
 ## 1. Introduction
@@ -235,3 +239,13 @@ into a reusable, industry-style UVM testbench.
 iverilog -g2012 -f F_file/<filelist>.f -s Pipeline_CPU -o cpu.out && vvp cpu.out
 ```
 Golden model: `python/tools/riscv_iss.py` · Test programs & bug log: `memo/`
+Detailed docs: [`memo/detailed_readme/`](./memo/detailed_readme/) — full storyline, module-by-module, and the complete bug log ([한글](./memo/detailed_readme/README_KR.md) · [English](./memo/detailed_readme/README_EN.md))
+
+---
+
+### A note on tooling
+Early CPUs carried every task alone and became the bottleneck; today, accelerators like NPUs and GPUs
+offload that work so the CPU is free to **orchestrate** — and the whole system runs faster. I built
+this project the same way: the **architecture, debugging, and verification decisions are entirely my
+own**, and I used **AI as an accelerator** for documentation and tooling. The engineer still conducts;
+the accelerator just makes it faster.
