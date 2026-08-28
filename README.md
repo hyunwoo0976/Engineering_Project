@@ -64,7 +64,8 @@ Fixed by propagating an `all_zero` flag to the exponent stage.
 | CPU forwarding unit | 14 directed cases | **14 / 14** |
 | FPU forwarding unit | 13 directed cases | **13 / 13** |
 | Forwarding (top level) | constrained-random, 1000 cases, reference model | **1000 / 1000** |
-| Integer pipeline | program-level simulation | runs, no `x`/`z` propagation |
+| Integer + FP pipeline | seven program-level integration tests, Python ISS | **all pass** |
+| Full-system stress | 120-instruction MEGA program | **30 integer + 30 FP registers match bit-for-bit** |
 
 Coverage was measured rather than assumed: of the 1000 random cases, only ~20 % actually
 exercised a forwarding path and the dual-forwarding case occurred 5 times — which is why
@@ -72,8 +73,10 @@ directed tests remain part of the suite.
 
 ### Status
 
-Complete: integer pipeline, FPU arithmetic, hazard logic, forwarding units.
-In progress: `FLW` / `FSW` datapath, hazard/forwarding integration, full FP program simulation.
+Complete: RV32I + F datapath, `FLW` / `FSW`, integer and FP forwarding, load-use and
+in-flight FP hazard handling, branch / `jal` / `jalr` control flow, and seven
+ISS-checked integration programs. The next step is reusable SystemVerilog/UVM verification
+for this same CPU.
 
 📄 Design notes and full bug history (Korean): [`memo/`](verilog/Project10_mini_CPU/memo/)
 · [Forwarding](verilog/Project10_mini_CPU/memo/Forwarding.md)
@@ -105,21 +108,23 @@ Section overview: [`verilog/README.md`](verilog/README.md)
 
 ---
 
-## Roadmap — SystemVerilog & UVM
+## Verification Roadmap — SystemVerilog to UVM
 
-The next stage. The intent is to verify the **same** RISC-V CPU with a UVM environment,
-so one design is covered from both the design and the verification side.
+The verification track is active, not just planned. The current exercises build the same
+mechanisms that will drive the RISC-V CPU: typed transactions, constrained-random generation,
+mailboxes, scoreboards, and deliberate RAW-dependency injection.
 
 | Stage | Topic | Status |
 |---|---|---|
-| 1 | [C++](c++) — OOP foundation (classes, inheritance, virtual, polymorphism) for SystemVerilog | in progress |
-| 2 | [`systemverilog/`](systemverilog) — classes, randomization, assertions (SVA), coverage | planned |
-| 3 | [`UVM/`](UVM) — agent / driver / monitor / scoreboard | planned |
-| 4 | AMBA (AXI / AHB) protocol verification IP | planned |
+| 1 | [`systemverilog/Project2`](systemverilog/Project2) — OOP, typed mailbox, constrained random | **in progress** |
+| 2 | [Distance-N RAW generator](systemverilog/Project2/13_riscv_integer_rd_queue.sv) | **first implementation passed** |
+| 3 | Interface / virtual interface + small ALU DUT | next |
+| 4 | UVM agent / driver / monitor / scoreboard | planned |
+| 5 | DPI-C ISS, functional coverage, SVA, coverage closure | planned |
 
-C++ is studied for the object-oriented concepts that UVM is built on — not as a language
-specialisation — and will later be reused as a **golden reference model** for FPU
-verification through DPI-C.
+The current debugging record is kept beside the exercise:
+[Project2-13 error log](systemverilog/Project2/memo/13_error_log.md).
+C++ remains useful as the implementation language for a future **DPI-C golden model**.
 
 Utility scripting lives in [`python/`](python).
 
@@ -131,6 +136,7 @@ Utility scripting lives in [`python/`](python).
 |---|---|
 | HDL | Verilog-2001 / SystemVerilog (IEEE 1800) |
 | Simulation | Icarus Verilog (`iverilog`, `vvp`) |
+| Constrained-random simulation | AMD Vivado Simulator (`xvlog`, `xelab`, `xsim`) |
 | Waveform | GTKWave |
 | C++ | Visual Studio |
 | Editor | Visual Studio Code |
