@@ -39,5 +39,9 @@ chromedriver-win64/
 Thumbs.db
 desktop.ini
 
+# ===== Local build / agent settings =====
+/obj_dir/
+/.claude/settings.local.json
+
 # ===== 개인용 사이드 프로젝트 (깃허브에 올리지 않음) =====
 vibe_coding/

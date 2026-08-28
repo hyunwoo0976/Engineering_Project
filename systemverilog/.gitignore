@@ -1,0 +1,21 @@
+﻿# 시뮬레이터 생성물 (커밋금지)
+obj_dir/
+xsim.dir/
+*.jou
+*.log
+*.pb
+*.wdb
+*.str
+.Xil/
+*.cache/
+*.hw/
+*.sim/
+*.srcs/
+*.ip_user_files/
+*.xpr
+snap*
+webtalk*
+xvlog.*
+xelab.*
+_work/
+.vscode/
