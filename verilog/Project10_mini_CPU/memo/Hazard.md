@@ -1,5 +1,9 @@
 # Hazard Unit 설계 메모
 
+[← Project overview](../README.md) · [Forwarding](Forwarding.md) · [Bug log](error_log.md) · [Final MEGA test](통합테스트_07_MEGA_최종.md)
+
+> **현재 상태:** 이 문서의 오류 목록은 설계 재검토 당시 발견한 항목을 보존한다. 통합에 필요한 기능 수정은 완료됐고, 최종 CPU는 [통합테스트 07](통합테스트_07_MEGA_최종.md)에서 all-pass했다. 단독 테스트벤치와 구조 단순화는 별도의 개선 과제다.
+
 RISC-V 5-stage 파이프라인 + 다중 사이클 FPU의 **해저드 검출 / stall·flush 제어** 정리.
 
 관련 문서: [Forwarding.md](Forwarding.md) — 포워딩은 해저드의 짝이므로 같이 볼 것.
@@ -182,7 +186,7 @@ FP 명령어가 사이클 T에 EX에 있었다면:
 
 ---
 
-## 7. 현재 발견된 오류 (미수정)
+## 7. 재검토 당시 발견된 오류 (후속 통합에서 해결)
 
 ### 🔴 컴파일 에러
 
@@ -240,19 +244,18 @@ FP 명령어가 사이클 T에 EX에 있었다면:
 
 ---
 
-## 9. 남은 작업
+## 9. 체크리스트와 현재 상태
 
-### 즉시 (컴파일/동작)
-- [ ] Hazard_Unit.v line 31 포트명 오타 수정
-- [ ] FPU_Check.v FSW 분기에 `for` 루프 추가
-- [ ] FPU_Hazard.v `wire FPU_6clk;` 선언
+### 통합 기능
+- [x] Hazard_Unit의 FSW 포트 연결 수정
+- [x] FPU_Check의 FSW 의존성 순회 및 EX_Rd 검출 수정
+- [x] FPU in-flight 카운트·주입·stall/flush 정합 — [OPEN-6 기록](error_log.md)
 
-### 설계 보완
-- [ ] FPU_Hazard FLW load-use 조건에 `ID_is_FSW` 포함
-- [ ] FLW load-use 분기를 `FPU_Valid`보다 **앞**으로 이동
-- [ ] CPU_Hazard의 load-use에 **파일 구분** 적용 (FLW ↔ 정수 소비자 가짜 매치 제거)
+### 선택적 설계 보완
+- [ ] 암시적 wire 등 경고성 항목을 명시 선언으로 정리
+- [ ] 정수/FP 파일 구분 로직과 우선순위를 더 단순한 구조로 리팩터링
 
-### 검증
+### 추가 검증
 - [ ] Hazard_Unit 단독 테스트벤치 작성
       — Forwarding처럼 directed + constrained random + 참조 모델 구조 권장
       — 필수 케이스: 각 flush 조건 / load-use / FPU_Left stall 해제 타이밍 /

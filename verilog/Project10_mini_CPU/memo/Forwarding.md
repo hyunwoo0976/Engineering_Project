@@ -1,5 +1,9 @@
 # Forwarding Unit 설계 메모
 
+[← Project overview](../README.md) · [Hazard](Hazard.md) · [Bug log](error_log.md) · [Final MEGA test](통합테스트_07_MEGA_최종.md)
+
+> **현재 상태:** 아래 설계와 통합 수정은 최종 CPU에 반영됐으며, [통합테스트 07](통합테스트_07_MEGA_최종.md)에서 회귀 없이 all-pass했다. 마지막 체크리스트는 작성 당시 계획을 현재 상태에 맞게 재분류했다.
+
 RISC-V 5-stage 파이프라인 + FPU의 **데이터 포워딩** 유닛 정리.
 정수 레지스터 파일과 FP 레지스터 파일 **두 개**를 다루는 것이 이 설계의 핵심 난점.
 
@@ -327,32 +331,32 @@ vvp test.out
 
 ---
 
-## 9. 남은 작업
+## 9. 체크리스트와 현재 상태
 
 ### 포워딩 자체
-- [ ] **directed 케이스 추가** — 이중 포워딩 / both 코드 / x0 금지 / f0 허용 / 경로 선택 4종
-- [ ] TB에 최종 요약 출력 (`PASS=%0d FAIL=%0d`)
+- [x] **directed 케이스** — CPU 14/14, FPU 13/13 PASS (§7)
+- [x] constrained-random 1000회 + 참조 모델 — 1000/1000 PASS (§7)
 - [ ] CPU_Forwarding + Combine 단순화 검토 (FPU_Forwarding이 이미 전부 커버)
 
 ### 통합 (Pipeline_CPU)
-- [ ] line 128의 옛 `Forwarding_Unit` 인스턴스를 새 계층으로 교체
-- [ ] `EX_uses_*`, `MEM_FRegWrite`, `WB_FRegWrite` 배선
-- [ ] **ALU_port_MUX를 오퍼랜드별 독립 구조로 재작성**
+- [x] 옛 `Forwarding_Unit` 인스턴스를 새 계층으로 교체
+- [x] `EX_uses_*`, `MEM_FRegWrite`, `WB_FRegWrite` 배선
+- [x] **ALU_port_MUX를 오퍼랜드별 독립 구조로 재작성**
       (현재 단일 if/else-if라 이중 포워딩이 MUX에서 죽음, MEM Rs2를 A포트로 보내는 버그,
        포워딩 시 ALUsrc/is_JALR 무시 등 3건)
-- [ ] **FP 오퍼랜드 MUX 신설** (`EX_F_A`/`EX_F_B`용) — 값 소스는 `MEM_FPU_Result` / `WB_F_data`
-- [ ] **다운스트림 MUX는 각자 자기 `uses`로 게이팅** — 같은 코드를 두 MUX가 보되 자기 오퍼랜드만 적용
+- [x] **FP 오퍼랜드 MUX 신설** (`EX_F_A`/`EX_F_B`용) — 값 소스는 `MEM_FPU_Result` / `WB_F_data`
+- [x] **다운스트림 MUX는 각자 자기 `uses`로 게이팅** — 같은 코드를 두 MUX가 보되 자기 오퍼랜드만 적용
 
 ### 디코더
-- [ ] 정수 opcode 7종에 `uses_Rs1/Rs2` 추가
-- [ ] FP opcode 3종에 `uses_Rs1/Rs2` + `uses_FRs1/FRs2` 추가
-- [ ] **FLW/FSW에 `ALUsrc=1`** ← 현재 주소가 `rs1+rs2`로 계산되는 버그
-- [ ] `FPU_Control.v` line 28 — **FMUL funct5가 `00100`으로 오기, `00010`이 맞음**
-- [ ] `FPU_Control.v` line 31 — 비교(`10100`)가 SUB와 같은 `2'b01` → 비교 하드웨어 없음.
+- [x] 정수 opcode 7종에 `uses_Rs1/Rs2` 추가
+- [x] FP opcode 3종에 `uses_Rs1/Rs2` + `uses_FRs1/FRs2` 추가
+- [x] **FLW/FSW에 `ALUsrc=1`**
+- [x] `FPU_Control.v`의 FMUL funct5 수정
+- [x] 구현 범위 밖 FP 비교 opcode를 지원 명령어에서 제외
       **비교는 구현 범위에서 제외하고 `default`(error)로 보낼 것**
 
 ### 해저드 (연관)
-- [ ] `FPU_Check.v` line 39가 `if(ID_is_FPU)` — **FSW가 f[rs2]를 읽는데 검출에서 빠짐**
+- [x] FSW의 in-flight `f[rs2]` 의존성 검출 추가 — [OPEN-6 기록](error_log.md)
 
 ---
 

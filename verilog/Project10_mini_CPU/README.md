@@ -1,5 +1,7 @@
 # Project 10: mini RISC-V CPU (RV32I + F Extension)
 
+[← Project 9](../Project9_mini_processer_using_FSM/README.md) · [Verilog projects](../README.md) · [Bug log](memo/error_log.md) · [Forwarding](memo/Forwarding.md) · [Hazard](memo/Hazard.md) · [Integration tests](memo/통합테스트_01_정수.md)
+
 > *A RISC-V CPU that is both **designed** from the gate up and **verified** against an independent
 > golden model — equal parts RTL design and design verification.*
 

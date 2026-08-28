@@ -1,5 +1,7 @@
 # Project 2: Binary Adder
 
+[← Project 1](../Project1_Combinational_logic_gate/README.md) · [Verilog projects](../README.md) · [Design notes](memo/정리.md) · [Background](memo/배경지식.md) · [Error log](memo/error_log.md) · [Next: Project 3 →](../Project3_subtractor/README.md)
+
 >Goal: Understand the architecture of a Half Adder and extend it to design a Full Adder capable of processing carry-in signals from lower-order bits.
 
 

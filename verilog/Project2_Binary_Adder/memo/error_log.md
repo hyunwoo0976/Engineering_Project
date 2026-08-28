@@ -1,5 +1,7 @@
 # Project 2 — 오류 기록
 
+[← README](../README.md) · [Design notes](정리.md) · [Background](배경지식.md)
+
 기록 형식: **증상 / 원인 / 수정 / 확인**
 
 ---

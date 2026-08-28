@@ -1,5 +1,9 @@
 # Project10 mini CPU — Error Log
 
+[← Project overview](../README.md) · [Forwarding](Forwarding.md) · [Hazard](Hazard.md) · [Integration tests 01–07](통합테스트_01_정수.md) · [Final MEGA test](통합테스트_07_MEGA_최종.md)
+
+> **현재 상태:** 아래 OPEN 항목은 개발 당시의 조사 순서를 보존한 기록이다. 기능 수정은 후속 단계에서 완료됐으며, 최종 상태는 [통합테스트 07](통합테스트_07_MEGA_최종.md)의 **120개 명령어 all-pass**로 확인했다.
+
 파형 오류 기록. 각 항목: 증상 / 원인(file:line) / 수정 / 확인(sol 파형).
 이미지는 `img_m_CPU/` 폴더, 파일명 규칙: `CPU_ErrorN_설명.PNG`, 해결본은 `..._sol.PNG`.
 ※ [확인필요] 표시는 파형·파일명으로 증상은 분명하나, 원인/수정을 내가 단정 못 한 항목 — 한 줄만 보태주면 확정.
@@ -330,11 +334,13 @@ port_MUX랑 FPU까지 다 붙이고, 드디어 실제 프로그램(정수 16개 
 
 **정수 통합 1차 마무리**: 첫 판 FAIL 4개(x2, x14, x15, x16)를 두 버그로 정리 —
 E24(레지스터 파일 write-first, 거리-3 해저드)와 E25(ALU_Control ANDI→SUB 오타). 둘 다 잡고 **16/16 PASS**.
-프로그램·기대값 표는 [[통합테스트_01_정수]] 참고.
+프로그램·기대값 표는 [통합테스트 01 — 정수 명령어](통합테스트_01_정수.md) 참고.
 
 ---
 
-## [미해결 — 현재 진행중]
+## 개발 당시 OPEN 조사 기록 — 현재 해결 완료
+
+> 이 절의 `조사중`, `확인 필요`, `할 일`은 당시 시점의 메모다. OPEN-3~5에서 좁힌 원인은 OPEN-6과 후속 통합 수정으로 해결됐고, [통합테스트 04](통합테스트_04_FPU.md)부터 [통합테스트 07](통합테스트_07_MEGA_최종.md)까지 회귀 검증했다.
 
 ### OPEN-1 · FPU_Valid 타이밍 정합 — 해결 (2026-08-01)
 - [증상] 다중 사이클 FPU에서 result 준비 시점과 FPU_Valid strobe 정합
@@ -342,7 +348,7 @@ E24(레지스터 파일 write-first, 거리-3 해저드)와 E25(ALU_Control ANDI
 - [원인] FPU_Check `FPU_Valid <= Rd[6][0]`(등록)이라 **지연 8** → result/shadow(지연 7)보다 1clk 늦음
 - [수정] `assign FPU_Valid = Rd[6][0]`(조합, **지연 7**)로 shadow layer6·코어(7)에 정렬. **해결.**
 
-### OPEN-3 · FPU 통합 첫 시도 — 결과가 전부 틀림 (명령어 흐름은 정상, FP 데이터패스 의심) (조사중)
+### OPEN-3 · FPU 통합 첫 시도 — 해결 (OPEN-4~6으로 원인 분리)
 - [파형] `img_m_CPU/CPU_OPEN3_FADD_FSUB_2clk.PNG` (FADD/FSUB 2클럭 첫 발견),
   `img_m_CPU/CPU_OPEN3_FPU_IF_ID_stall.PNG` (FPU_IF_ID_stall·PCWrite 추가본 — 스톨 확인)
   · FPU를 CPU에 붙여 처음 돌렸는데 **결과가 전체적으로 다 틀림.**
@@ -357,7 +363,7 @@ E24(레지스터 파일 write-first, 거리-3 해저드)와 E25(ALU_Control ANDI
   · 의심 1순위: FPU_Valid 정렬(방금 고침), shadow_reg가 제어신호를 결과와 같이 나르나, 결과선택 MUX
   (참고: FPU_Check FSW for문 버그도 아직 열려 있음 → 아래 OPEN-4에서 터짐)
 
-### OPEN-4 · FSW에서 파이프라인 멈춤 + MemWrite=0 (FPU_Check FSW for문 버그로 추정) (조사중)
+### OPEN-4 · FSW에서 파이프라인 멈춤 + MemWrite=0 — 해결
 - [파형] `img_m_CPU/CPU_OPEN4_FSW_ID_is_FSW_z.PNG`
   FSW(`00A02827` = fsw f10, 16(x0)) 차례에 `FPU_IF_ID_stall=1`·`PCWrite=0`으로 **스톨이 걸린 채
   안 풀림** → 뒤 명령어가 아예 안 들어옴. `MemWrite=0`이라 저장도 안 됨. `ID_is_FSW=z`(배선 누락)도 여기서 보임.
@@ -368,14 +374,14 @@ E24(레지스터 파일 write-first, 거리-3 해저드)와 E25(ALU_Control ANDI
   → FPU_Check의 `else if(ID_is_FSW)`가 z로 동작 → FSW 해저드 검출 불확정 → 쓰레기 스톨.
   (z는 드라이버 없음. 우리가 계속 쓰던 "z=floating=포트 미연결" 그것)
   → [수정] Hazard_Unit 인스턴스에 `.ID_is_FSW(ID_is_FSW)` 추가.
-- [원인 ② 아직 남음 — for문] 위를 고쳐서 ID_is_FSW=1이 들어오면, 이번엔 FPU_Check FSW 분기(~58행)에
+- [원인 ② — for문] 위를 고쳐서 ID_is_FSW=1이 들어오면, 이번엔 FPU_Check FSW 분기(~58행)에
   **for문이 없어** 잔값 `x`(=7)로 `Rd[7]` 범위밖([0:6]) 접근 → FPU_Left 쓰레기. **둘 다 고쳐야 함.**
   → [수정] FSW 분기를 FPU 분기처럼 `for(x=0;x<7;x=x+1)`로 감싸기 (Rs2만 검사).
-- [확인 필요] 둘 다 고친 뒤: FSW가 f10 준비되면 스톨 풀림 → MEM 도달 → MemWrite=1 → mem[16] 저장.
+- [확인] 둘 다 고친 뒤 FSW가 f10 준비 시 스톨 해제 → MEM 도달 → MemWrite=1 → mem[16] 저장. [통합테스트 04](통합테스트_04_FPU.md)에서 all-pass.
   MemWrite=0은 원인이 아니라 증상(FSW가 MEM 못 감)이었음.
 - [교훈] `z`가 보이면 논리 뜯기 전에 **배선부터** 확인. 파형에 신호 하나 z로 뜬 게 결정적 단서였다.
 
-### OPEN-5 · ImmGen이 FLW/FSW immediate를 안 만듦 — opcode 케이스 누락 (원인 확정)
+### OPEN-5 · ImmGen이 FLW/FSW immediate를 안 만듦 — 해결
 - [파형] `img_m_CPU/CPU_OPEN5_ImmGen_FLW_imm0.PNG`
   · FLW 구간(`Opcode=07`, `inst=00002087`)에서 **`imm_out = 00000000`**. offset이 있어야 하는데 0으로 나옴.
   · FLW/FSW인데 ImmGen이 immediate를 0으로 뱉음 → 주소 = `rs1 + 0` → **offset이 통째로 무시됨.**
@@ -427,7 +433,7 @@ in-flight FP 결과를 바로 쓰는 케이스(`fadd f9 → fsub f10`, `fsub f10
 ---
 
 ## [통합테스트 06 — 전 명령어 + 중첩 JALR + 제어흐름/FP스톨 (all-pass, 2026-08-07)]
-상세 스토리: `통합테스트_06_전명령어_중첩JALR.md`. 61개 프로그램, **재실행 하나에서 7개 FAIL cascade**.
+상세 스토리: [통합테스트 06 — 전 명령어 + 중첩 JALR](통합테스트_06_전명령어_중첩JALR.md). 61개 프로그램, **재실행 하나에서 7개 FAIL cascade**.
 
 ### E26 · 명령어 메모리 오버플로 (wrap)
 - [파형] `CPU_T06_5_reexec_PCwrap_0x100.PNG`

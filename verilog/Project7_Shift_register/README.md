@@ -1,5 +1,7 @@
 # Project 7: Latch, Flip-flop and Register
 
+[← Project 6](../Project6_Top_module_using_register/README.md) · [Verilog projects](../README.md) · [Design notes](memo/정리.md) · [Background](memo/배경지식.md) · [Error log](memo/error_log.md) · [Next: Project 8 →](../Project8_Register_Topsystem/README.md)
+
 ## 1. Introduction & Design Architecture
 
 ### 1. Introduction

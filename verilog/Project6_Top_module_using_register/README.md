@@ -1,5 +1,7 @@
 # Project 6: Topmodule using Register
 
+[← Project 5](../Project5_ALU/README.md) · [Verilog projects](../README.md) · [Design notes](memo/정리.md) · [Background](memo/배경지식.md) · [Error log](memo/error_log.md) · [Next: Project 7 →](../Project7_Shift_register/README.md)
+
 ## 1. Introduction & Design Architecture
 
 ### Register Architecture

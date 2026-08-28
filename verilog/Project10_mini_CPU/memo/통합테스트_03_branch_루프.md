@@ -1,5 +1,7 @@
 # 통합테스트 03 — Branch + 루프 + 메모리 (ISS로 골든모델)
 
+[← 02 메모리·해저드](통합테스트_02_메모리_해저드.md) · [Project overview](../README.md) · [Next: 04 FPU →](통합테스트_04_FPU.md)
+
 분기 4종 + 뒤로 뛰는 루프 + SW/LW + 포워딩을 **한 프로그램**에 다 몰아넣은 종합 테스트.
 손으로는 도저히 검증이 안 돼서 **파이썬 ISS(instruction set simulator)를 golden model로** 만들어 대조했다.
 이 프로그램 하나 완성하는 데 **8번쯤 고쳤고**, 매번 ISS가 내 손계산 실수를 잡아줬다.

@@ -1,5 +1,7 @@
 # 통합테스트 07 — MEGA 최종 (120 명령어, 전 케이스 총집합)
 
+[← 06 전 명령어](통합테스트_06_전명령어_중첩JALR.md) · [Project overview](../README.md) · [Bug log](error_log.md) · [Detailed Korean](detailed_readme/README_KR.md) · [Detailed English](detailed_readme/README_EN.md)
+
 여태 만든 모든 케이스를 **한 프로그램(120개)**에 다 몰아넣은 최종 검증. **첫 실행에 all-pass** —
 그동안 잡은 버그 fix들이 서로 충돌 없이 맞물리고, 회귀 없음을 증명.
 

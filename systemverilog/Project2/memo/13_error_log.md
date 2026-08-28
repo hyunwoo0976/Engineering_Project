@@ -1,4 +1,8 @@
-# Project2-10 · Integer Rd Queue / RAW Dependency — Error Log
+# Project2-13 · Integer Rd Queue / RAW Dependency — Error Log
+
+[← Repository overview](../../../README.md) · [Source](../13_riscv_integer_rd_queue.sv)
+
+> **현재 상태:** 1차 구현은 xsim 50회 검증을 통과했다. E17 이후 항목은 명령어와 의존성 메타데이터를 같은 mailbox로 전달하는 2차 개선 과제다.
 
 `13_riscv_integer_rd_queue.sv`에서 최근 정수 Rd 큐를 만들고 거리 1~N RAW 의존성을 주입하면서 생긴 오류 기록.
 각 항목은 **증상 / 원인 / 수정 / 확인 / 교훈** 순서. 2026-08-28 1차 기능 검증 완료.

@@ -1,5 +1,7 @@
 # 통합테스트 06 — 전 명령어 + 중첩 JALR + 제어흐름/FP스톨 충돌 (하드코어)
 
+[← 05 JAL/JALR](통합테스트_05_JAL_JALR_혼합.md) · [Project overview](../README.md) · [Bug log E26–E29](error_log.md) · [Next: 07 MEGA →](통합테스트_07_MEGA_최종.md)
+
 CPU가 지원하는 **모든 명령어**(논리·시프트 포함) + **2단 중첩 서브루틴**(JAL/JALR) +
 오버플로 + 깊은 FP in-flight 체인 + 루프 속 FP + 정수/FP writeback 충돌을 한 프로그램(61개)에 몰아넣은 최종 테스트.
 파이썬 어셈블러+ISS(JAL/JALR/논리/시프트 지원 추가본)로 골든 생성.

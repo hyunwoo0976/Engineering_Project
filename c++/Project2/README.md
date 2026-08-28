@@ -1,4 +1,7 @@
 # Project 2: Control Flow — if/else, for, and while
+
+[← Project 1](../Project1/README.md) · [Repository home](../../README.md) · [Notes](memo/정리.md) · [Background](memo/배경지식.md) · [Error log](memo/error_log.md) · [Next: Project 3 →](../Project3/README.md)
+
 >Goal: Practice conditional branching and looping by modeling a simple voltage-monitoring routine, then compare a `for`-loop version against a `while`-loop version of the same idea.
 
 - Files:

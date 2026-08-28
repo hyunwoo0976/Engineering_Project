@@ -1,5 +1,7 @@
 # 통합테스트 04 — FPU 통합 (flw/fsw/fadd/fsub/fmul, 7clk in-flight)
 
+[← 03 branch·루프](통합테스트_03_branch_루프.md) · [Project overview](../README.md) · [Bug log OPEN-6](error_log.md) · [Next: 05 JAL/JALR →](통합테스트_05_JAL_JALR_혼합.md)
+
 IEEE-754 단정밀도 FPU를 5단 파이프라인에 통합한 뒤, **FP 로드/스토어 + 산술 + in-flight 해저드**를
 한 프로그램에 몰아넣은 종합 테스트. 정수 통합(테스트 01~03)과 동일하게 **파이썬 ISS를 golden model**로 대조.
 

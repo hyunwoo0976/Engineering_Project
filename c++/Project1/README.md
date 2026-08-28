@@ -1,4 +1,7 @@
 # Project 1: C++ Basics — Variables, I/O, and Operators
+
+[← Repository home](../../README.md) · [Notes](memo/정리.md) · [Background](memo/배경지식.md) · [Error log](memo/error_log.md) · [Next: Project 2 →](../Project2/README.md)
+
 >Goal: Get comfortable with the fundamentals of C++ — declaring variables, reading input with `std::cin`, printing output with `std::cout`, and using arithmetic operators.
 
 - Files:

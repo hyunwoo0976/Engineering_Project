@@ -1,5 +1,7 @@
 # Verilog 주의점
 
+[← Verilog projects](../README.md) · [Verification methodology](검증_방법론.md) · [Tool guide](도구_사용법.md)
+
 실제로 겪은 버그에서 뽑은 것들. 문법 교과서에는 잘 안 나오지만 반복해서 발목을 잡는 항목.
 
 ---

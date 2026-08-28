@@ -1,7 +1,10 @@
 # Project 1: Combinational logic gate
+
+[← Verilog projects](../README.md) · [Design notes](memo/정리.md) · [Background](memo/배경지식.md) · [Error log](memo/error_log.md) · [Next: Project 2 →](../Project2_Binary_Adder/README.md)
+
 >Goal: Optimize and minimize complex logic circuits
 
-f=(~x)&y&z|(~x)&y&z|x&z
+f=(~x)&y&z|(~x)&y&(~z)|x&z
 
 Excessive complexity increases hardware resource usage -> High gate count(High resources usage)
 

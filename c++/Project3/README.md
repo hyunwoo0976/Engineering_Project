@@ -1,4 +1,7 @@
 # Project 3: Nested Loops & Arrays — Patterns and Voltage Statistics
+
+[← Project 2](../Project2/README.md) · [Repository home](../../README.md) · [Notes](memo/정리.md) · [Background](memo/배경지식.md) · [Error log](memo/error_log.md)
+
 >Goal: Move from single loops to nested loops and arrays — build 2D star patterns and compute simple statistics (average, max, min) over a fixed-size dataset.
 
 - Files:
