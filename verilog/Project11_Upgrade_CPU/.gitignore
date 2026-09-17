@@ -1,0 +1,13 @@
+_work/
+*.vvp
+*.vcd
+*.jou
+*.log
+*.exe
+__pycache__/
+xsim.dir/
+.Xil/
+*.wdb
+*.pb
+*.str
+*.wcfg

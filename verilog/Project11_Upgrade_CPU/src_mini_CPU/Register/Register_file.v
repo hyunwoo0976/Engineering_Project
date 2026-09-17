@@ -1,0 +1,33 @@
+module Register_file #(
+    parameter W = 32,
+    parameter ZERO_REGISTER = 1
+) (
+    input [W-1:0] we_data,
+    input [4:0] we_addr,
+    input [4:0] Rs1_addr, Rs2_addr, Rt_addr,
+    input clk, reset, we,
+    output [W-1:0] Rs1_data, Rs2_data, Rt_data
+);
+
+    reg [W-1:0] mem[0:31];
+
+    integer i;
+    always @(posedge clk or posedge reset)begin
+        if(reset)begin
+            for(i = 0; i < 32; i = i + 1)begin
+                mem[i] <= 32'b0;
+            end
+        end
+        else begin
+            if(we && (!ZERO_REGISTER || we_addr != 5'd0))begin
+                mem[we_addr] <= we_data;
+            end
+        end
+    end
+
+    assign
+        Rs1_data = (ZERO_REGISTER && Rs1_addr == 5'd0) ? 32'b0 : (we && we_addr == Rs1_addr) ? we_data : mem[Rs1_addr];
+    assign
+        Rs2_data = (ZERO_REGISTER && Rs2_addr == 5'd0) ? 32'b0 : (we && we_addr == Rs2_addr) ? we_data : mem[Rs2_addr];
+    assign Rt_data = (ZERO_REGISTER && Rt_addr == 5'd0) ? 32'b0 : mem[Rt_addr];
+endmodule

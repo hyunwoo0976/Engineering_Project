@@ -1,0 +1,120 @@
+0fc00093 // addi x1,x0,252
+03f00113 // addi x2,x0,63
+0020f1b3 // and x3,x1,x2
+0020e233 // or x4,x1,x2
+0020c2b3 // xor x5,x1,x2
+00f0f313 // andi x6,x1,15
+00400393 // addi x7,x0,4
+00709433 // sll x8,x1,x7
+0070d4b3 // srl x9,x1,x7
+f0000513 // addi x10,x0,-256
+407555b3 // sra x11,x10,x7
+40110633 // sub x12,x2,x1
+00002087 // flw f1,0,x0
+00402107 // flw f2,4,x0
+00802187 // flw f3,8,x0
+00c02f87 // flw f31,12,x0
+10208253 // fmul f4,f1,f2
+002086b3 // add x13,x1,x2
+003102d3 // fadd f5,f2,f3
+08328353 // fsub f6,f5,f3
+0051e733 // or x14,x3,x5
+106303d3 // fmul f7,f6,f6
+00738453 // fadd f8,f7,f7
+082104d3 // fsub f9,f2,f2
+00540553 // fadd f10,f8,f5
+00802827 // fsw f8,16,x0
+00402a23 // sw x4,20,x0
+01002587 // flw f11,16,x0
+01402783 // lw x15,20,x0
+00a02c27 // fsw f10,24,x0
+00d02e23 // sw x13,28,x0
+01802607 // flw f12,24,x0
+01c02803 // lw x16,28,x0
+002106d3 // fadd f13,f2,f2
+00108463 // beq x1,x1,D1
+06f00893 // addi x17,x0,111
+02a00893 // D1: addi x17,x0,42
+10310753 // fmul f14,f2,f3
+00209463 // bne x1,x2,D2
+06f00913 // addi x18,x0,111
+02b00913 // D2: addi x18,x0,43
+083287d3 // fsub f15,f5,f3
+00064463 // blt x12,x0,D3
+06f00993 // addi x19,x0,111
+02c00993 // D3: addi x19,x0,44
+10210853 // fmul f16,f2,f2
+0020d463 // bge x1,x2,D4
+06f00a13 // addi x20,x0,111
+02d00a13 // D4: addi x20,x0,45
+0c20ca63 // blt x1,x2,DEAD
+02e00a93 // addi x21,x0,46
+00300b13 // addi x22,x0,3
+002888d3 // LOOP: fadd f17,f17,f2
+007b8bb3 // add x23,x23,x7
+fffb0b13 // addi x22,x22,-1
+fe0b1ae3 // bne x22,x0,LOOP
+10108cd3 // fmul f25,f1,f1
+10318d53 // fmul f26,f3,f3
+01ad0dd3 // fadd f27,f26,f26
+11ff8e53 // fmul f28,f31,f31
+01fe0ed3 // fadd f29,f28,f31
+08628f53 // fsub f30,f5,f6
+00200e13 // addi x28,x0,2
+00300e93 // OUT: addi x29,x0,3
+002c8cd3 // INN: fadd f25,f25,f2
+007f0f33 // add x30,x30,x7
+fffe8e93 // addi x29,x29,-1
+fe0e9ae3 // bne x29,x0,INN
+fffe0e13 // addi x28,x28,-1
+fe0e14e3 // bne x28,x0,OUT
+007390b3 // sll x1,x7,x7
+103106d3 // fmul f13,f2,f3
+0020c463 // blt x1,x2,DA
+05800413 // addi x8,x0,88
+00210753 // DA: fadd f14,f2,f2
+00115463 // bge x2,x1,DB
+05900493 // addi x9,x0,89
+02109663 // DB: bne x1,x1,DEAD2
+05a00813 // addi x16,x0,90
+02102023 // sw x1,32,x0
+02002783 // lw x15,32,x0
+03b02227 // fsw f27,36,x0
+02402d07 // flw f26,36,x0
+10210f53 // fmul f30,f2,f2
+00108463 // beq x1,x1,MORE
+06f00893 // addi x17,x0,111
+03700893 // MORE: addi x17,x0,55
+0080006f // jal x0,CONT
+0de00813 // DEAD2: addi x16,x0,222
+00310a53 // CONT: fadd f20,f2,f3
+03800c6f // jal x24,SUB1
+00208cb3 // add x25,x1,x2
+00108463 // beq x1,x1,AFT
+01c0006f // jal x0,TRAP
+04d00d13 // AFT: addi x26,x0,77
+10310953 // fmul f18,f2,f3
+00108463 // beq x1,x1,FIN
+06f00d93 // addi x27,x0,111
+06300d93 // FIN: addi x27,x0,99
+0100006f // jal x0,HALT
+00100d13 // TRAP: addi x26,x0,1
+0080006f // jal x0,HALT
+0de00a93 // DEAD: addi x21,x0,222
+0000006f // HALT: jal x0,HALT
+00b00e13 // SUB1: addi x28,x0,11
+102109d3 // fmul f19,f2,f2
+01000eef // jal x29,SUB2
+001e0f33 // add x30,x28,x1
+00298a53 // fadd f20,f19,f2
+000c0067 // jalr x0,x24,0
+08310ad3 // SUB2: fsub f21,f2,f3
+03700f93 // addi x31,x0,55
+010002ef // jal x5,SUB3
+01cf81b3 // add x3,x31,x28
+10310b53 // fmul f22,f2,f3
+000e8067 // jalr x0,x29,0
+00210bd3 // SUB3: fadd f23,f2,f2
+0070f213 // andi x4,x1,7
+10318c53 // fmul f24,f3,f3
+00028067 // jalr x0,x5,0

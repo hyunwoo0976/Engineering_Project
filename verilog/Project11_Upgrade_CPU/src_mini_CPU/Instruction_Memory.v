@@ -1,0 +1,15 @@
+module Instruction_Memory #(
+    parameter W = 32
+) (
+    input [W-1:0] pc,
+    output [W-1:0] instruction
+);
+
+    reg [W-1:0] mem[0:127];
+
+    initial begin
+        $readmemh("./runtime/memo/program.txt", mem);
+    end
+
+    assign instruction = mem[pc[8:2]];
+endmodule
