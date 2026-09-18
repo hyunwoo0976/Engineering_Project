@@ -31,7 +31,7 @@ Icarus Verilog에서 두 FPU를 동시에 실행하고 독립적인 Python 정�
 
 ## 실험용 FPGA 비교
 
-사용자 동의 기준 부품은 `xc7a35tcpg236-1`이다. Vivado 2026.1에서 두 모드에 같은 20ns 클럭을 주고 OOC 합성·배치배선을 수행한다. reset 입력만 false path로 제외한다. 외부 입력/출력 delay 및 실제 보드 핀 조건은 없으므로 내부 register-to-register 타이밍 실험이다.
+비교용 기준 부품은 `xc7a35tcpg236-1`이다. Vivado 2026.1에서 두 모드에 같은 20ns 클럭을 주고 OOC 합성·배치배선을 수행한다. reset 입력만 false path로 제외한다. 외부 입력/출력 delay 및 실제 보드 핀 조건은 없으므로 내부 register-to-register 타이밍 실험이다.
 
 `report_power`는 SAIF를 적용하지 않은 vectorless 추정이다. 따라서 보고서의 W 수치가 있더라도 실제 workload의 실측 소비전력으로 표현하지 않는다. 실제 소비전력 개선 주장을 하려면 대표 workload, 구현 netlist activity annotation, clock/reset 조건과 측정 환경을 추가로 고정해야 한다.
 
