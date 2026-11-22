@@ -1,6 +1,4 @@
-module ALU_A_MUX #(
-    parameter W = 32
-) (
+module ALU_A_MUX #(parameter W = 32)(
     input [W-1:0] EX_A,
     input [W-1:0] pc,
     input is_JALR,

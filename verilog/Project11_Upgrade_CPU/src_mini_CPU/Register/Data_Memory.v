@@ -1,6 +1,4 @@
-module Data_Memory #(
-    parameter W = 32
-) (
+module Data_Memory #(parameter W = 32)(
     input clk,
     input MemWrite,
     input MemRead,

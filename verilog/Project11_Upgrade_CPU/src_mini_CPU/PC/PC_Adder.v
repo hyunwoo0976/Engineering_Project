@@ -1,6 +1,4 @@
-module PC_Adder #(
-    parameter W = 32
-) (
+module PC_Adder #(parameter W = 32)(
     input [W-1:0] current_pc,
     output [W-1:0] next_pc
 );

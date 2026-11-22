@@ -1,6 +1,4 @@
-module barrel_shifter #(
-    parameter W = 48
-) (
+module barrel_shifter #(parameter W = 48)(
     input direction, doing,
     input [7:0] count,
     input [W-1:0] shift,

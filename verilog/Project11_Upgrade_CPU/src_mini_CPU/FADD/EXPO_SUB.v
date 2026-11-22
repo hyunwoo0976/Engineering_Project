@@ -1,6 +1,4 @@
-module EXPO_SUB #(
-    parameter W = 8
-) (
+module EXPO_SUB #(parameter W = 8)(
     input [W-1:0] EXPO_a, EXPO_b,
     output reg [W-1:0] count,
     output reg direction,

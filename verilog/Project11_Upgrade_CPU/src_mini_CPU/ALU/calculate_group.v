@@ -1,6 +1,4 @@
-module calculate_group #(
-    parameter W = 32
-) (
+module calculate_group #(parameter W = 32)(
     input [W-1:0] A,
     input [W-1:0] B,
     input [3:0] ALU_Control,

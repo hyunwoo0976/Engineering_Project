@@ -1,8 +1,8 @@
-# Run python tools/run_regression.py first to prepare vectors and CPU memories.
+﻿# Run python tools/run_regression.py first to prepare vectors and CPU memories.
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 $work = Join-Path $root '_work'
-$bin = 'D:\My_project\2026.1\Vivado\bin'
+$bin = 'D:\My_project\Engineering_Project\development\2026.1\Vivado\bin'
 
 if (!(Test-Path (Join-Path $work 'vectors.txt'))) {
     throw 'Run python tools/run_regression.py first.'

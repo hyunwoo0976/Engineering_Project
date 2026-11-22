@@ -1,9 +1,6 @@
 `default_nettype none
 // Fixed seven-register latency; ADD/SUB and MUL retain separate cores.
-module FPU #(
-    parameter W = 32,
-    parameter ISOLATE = 1
-) (
+module FPU #(parameter W = 32, parameter ISOLATE = 1)(
     input wire [W-1:0] IN_A, IN_B,
     input wire [1:0] op,
     input wire [2:0] rm,

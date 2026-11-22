@@ -1,6 +1,4 @@
-module ImmGen #(
-    parameter W = 32
-) (
+module ImmGen #(parameter W = 32)(
     input [W-1:0] inst,
     output reg [W-1:0] imm_out
 );

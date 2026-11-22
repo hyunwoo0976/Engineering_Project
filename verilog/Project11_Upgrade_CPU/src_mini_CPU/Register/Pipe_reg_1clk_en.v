@@ -1,6 +1,4 @@
-module Pipe_reg_1clk_en #(
-    parameter W = 32
-) (
+module Pipe_reg_1clk_en #(parameter W = 32)(
     input [W-1:0] D,
     input clk, reset, en,
     output reg [W-1:0] Q

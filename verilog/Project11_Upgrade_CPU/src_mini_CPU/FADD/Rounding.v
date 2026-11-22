@@ -1,6 +1,4 @@
-module Rounding #(
-    parameter W = 48
-) (
+module Rounding #(parameter W = 48)(
     input [W-1:0] FRAC,
     input [2:0] rm,
     output [22:0] final_FRAC,

@@ -1,6 +1,4 @@
-module Cond_Inverter #(
-    parameter W = 32
-) (
+module Cond_Inverter #(parameter W = 32)(
     input eff_sub,
     input [W-1:0] FRAC_B,
     output reg [W-1:0] FRAC_cla_B,

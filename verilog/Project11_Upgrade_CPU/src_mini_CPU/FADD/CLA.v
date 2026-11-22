@@ -1,6 +1,4 @@
-module CLA #(
-    parameter W = 48
-) (
+module CLA #(parameter W = 48)(
     input [W-1:0] A, B,
     input Cin,
     output [W-1:0] Sum,

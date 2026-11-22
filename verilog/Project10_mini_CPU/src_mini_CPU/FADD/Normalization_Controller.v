@@ -1,4 +1,4 @@
-module Normalization_Controller#(parameter W=32)(
+module Normalization_Controller #(parameter W=32)(
     input [W-1:0]Sum,
     input Cout,
     input eff_sub,

@@ -1,7 +1,5 @@
 // Historical single-cycle example; not the Project11 Pipeline_CPU build target.
-module Top_CPU #(
-    parameter W = 32
-) (
+module Top_CPU #(parameter W = 32)(
     input clk, reset,
     output [W-1:0] current_pc,
     output [W-1:0] current_inst,

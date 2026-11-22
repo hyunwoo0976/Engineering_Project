@@ -1,6 +1,4 @@
-module PC_reg #(
-    parameter W = 32
-) (
+module PC_reg #(parameter W = 32)(
     input clk, reset,
     input PCWrite,
     input [W-1:0] next_pc,

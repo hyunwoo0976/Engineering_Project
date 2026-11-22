@@ -1,6 +1,4 @@
-module Pipe_reg_1clk_control #(
-    parameter W = 32
-) (
+module Pipe_reg_1clk_control #(parameter W = 32)(
     input clk, reset,
     input stall,  //0: Pass 1: Hold data
     input flush,  //1: Clear data

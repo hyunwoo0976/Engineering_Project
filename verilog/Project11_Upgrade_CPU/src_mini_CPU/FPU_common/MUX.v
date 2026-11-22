@@ -1,6 +1,4 @@
-module MUX #(
-    parameter W = 32
-) (
+module MUX #(parameter W = 32)(
     input [W-1:0] ADD_out, MUL_out,
     input OF_ADD, UF_ADD, error_ADD,
     input OF_MUL, UF_MUL,

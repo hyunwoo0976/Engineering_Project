@@ -1,6 +1,4 @@
-module ALU_port_MUX #(
-    parameter W = 32
-) (
+module ALU_port_MUX #(parameter W = 32)(
     //[A]
     input [W-1:0] EX_A,
     input [W-1:0] pc,

@@ -1,6 +1,4 @@
-module Early_Jump_Unit #(
-    parameter W = 32
-) (
+module Early_Jump_Unit #(parameter W = 32)(
     input [W-1:0] Imm,
     input [W-1:0] pc,
     input is_JAL,

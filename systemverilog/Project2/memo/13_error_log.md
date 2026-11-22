@@ -2,7 +2,7 @@
 
 [← Repository overview](../../../README.md) · [Source](../13_riscv_integer_rd_queue.sv)
 
-> **현재 상태:** 1차 구현은 xsim 50회 검증을 통과했다. E17 이후 항목은 명령어와 의존성 메타데이터를 같은 mailbox로 전달하는 2차 개선 과제다.
+> **현재 상태:** 1차 RAW 기능과 2차 단일-mailbox wrapper 구조 모두 xsim 50회 검증을 통과했다. 명령어와 생성 당시 의존성 메타데이터가 `DepPacket` 하나로 함께 전달된다.
 
 `13_riscv_integer_rd_queue.sv`에서 최근 정수 Rd 큐를 만들고 거리 1~N RAW 의존성을 주입하면서 생긴 오류 기록.
 각 항목은 **증상 / 원인 / 수정 / 확인 / 교훈** 순서. 2026-08-28 1차 기능 검증 완료.
@@ -176,6 +176,58 @@
 - [다음 수정] `dep_applied`, `target`, `distance`, 필요 시 queue snapshot을 transaction 또는 묶음 객체에 저장해 같은 mailbox로 전달.
 - [교훈] 데이터와 그 데이터의 설명표는 같은 컨베이어벨트에 태워야 한다.
 
+---
+
+## [Mailbox 메타데이터 전달 / 단일 wrapper]
+
+### E18 · `Accessing non-static members of a null object` — 공유 Tracker 생성 순서
+
+- [증상] 컴파일과 elaboration은 통과했지만 run 시작 직후 line 161의 `d_handle.write = 1'b0`에서 null 객체 접근 오류가 발생.
+- [원인] Top에서 `Generator gen = new(mb, den)`과 `Scoreboard scr = new(...)`를 먼저 실행하고 그 아래에서 `DependencyTracker den = new(mb2)`를 실행했다. Generator 생성 시 전달된 `den`은 아직 null이었고, 생성자에서 그 null 핸들을 `d_handle`에 저장했다.
+- [수정] 객체 의존 순서대로 `mb/mb2 생성 → den 생성 → gen/scr 생성`으로 재배치.
+- [확인] xsim run이 시작되고 50개 명령어가 끝까지 생성·소비됨.
+- [교훈] 선언 위치가 위에 보인다는 것만으로 객체가 존재하는 것이 아니다. 다른 객체의 생성자에 전달할 리모콘은 먼저 `new()`되어 실제 TV를 가리켜야 한다.
+
+### E19 · 명령어 mailbox와 메타데이터 mailbox 두 개 — 현재는 맞지만 원자적이지 않음
+
+- [구조] `mailbox #(BaseTr)`에는 명령어를, `mailbox #(DepPacket)`에는 `doing/target/distance/queue snapshot`을 별도로 전달.
+- [확인] 단일 Generator와 반복별 `fork...join`에서는 두 mailbox의 생산·소비 순서가 같아 명령어 A와 메타데이터 A가 정상적으로 짝지어짐.
+- [위험] 여러 producer 또는 연속 비동기 생산으로 확장하면 두 컨베이어벨트의 도착 순서가 달라져 `명령어 A + 메타데이터 B`로 잘못 짝지어질 수 있음.
+- [수정 방향] `DepPacket`에 `BaseTr bt` 핸들을 추가해 명령어와 메타데이터를 한 wrapper 객체로 만들고 `mailbox #(DepPacket)` 하나만 사용.
+- [교훈] mailbox가 무조건 적을수록 좋은 것이 아니다. **반드시 같은 transaction으로 움직여야 하는 정보**는 한 택배 상자에 묶어 원자적으로 전달해야 한다.
+
+### E20 · 단일 mailbox로 바꾼 뒤 계속 `NOT dependent` — `pre_send()`가 다른 상자를 채움
+
+- [증상] 실제 명령어의 Rs1/Rs2에는 과거 Rd가 주입되는 것처럼 보이는데 Scoreboard 출력은 50회 모두 `NOT dependent`.
+- [최초 추측] `doing`이 매 반복 0으로 초기화되거나 `choose_Rd()`의 동전 결과가 계속 0인 것으로 의심.
+- [증거] 이전 I-type의 Rd=`01100` 다음 I-type의 Rs1=`01100`처럼 실제 RAW 주입은 발생했다. 따라서 Tracker 내부 `doing`은 1이 되었지만 전송된 packet에 반영되지 않은 것으로 범위를 좁힘.
+- [원인]
+  1. Generator에서 `handle = new()`로 전송할 상자 A를 생성.
+  2. `pre_send()` 내부에서 다시 `DepPacket handle = new()`로 별도 상자 B를 생성.
+  3. `doing/target/distance/queue`는 상자 B에 기록했지만 B를 반환하거나 전송하지 않음.
+  4. Generator는 `bt`만 들어 있고 나머지는 기본값 0인 상자 A를 mailbox에 put.
+- [수정] Generator가 명령어마다 `DepPacket`을 한 번만 `new()`하고 `pre_send(DepPacket handle)`에 그 핸들을 전달. `pre_send()` 내부의 지역 `new()`를 제거하고 전달받은 동일 객체의 필드를 채운 뒤 Generator가 `bt`를 연결해 put.
+- [확인] xsim에서 `DEPENDENT`와 `NOT dependent`가 정상적으로 섞여 출력되고, dependent packet의 target/distance와 실제 명령어의 Rs1 또는 Rs2가 일치.
+- [교훈] 변수 이름이 둘 다 `handle`이어도 같은 객체가 아니다. mailbox는 객체 내용을 복사하는 것이 아니라 핸들을 전달하므로, 포장 담당자와 발송 담당자가 **같은 택배 상자 객체**를 가리키는지 확인해야 한다.
+
+### 최종 단일-mailbox 구조
+
+```text
+Generator
+  ├─ 자식 instruction 객체 생성·randomize
+  ├─ DepPacket 객체를 명령어마다 한 번 new
+  ├─ Tracker.pre_send(packet)으로 생성 당시 snapshot 기록
+  ├─ packet.bt에 instruction 핸들 연결
+  └─ mailbox #(DepPacket)에 packet 한 번 put
+
+Scoreboard
+  └─ packet 한 번 get
+       ├─ packet.print()      : 의존성 정보
+       └─ packet.bt.print()   : 실제 자식 instruction (virtual dispatch)
+```
+
+`DepPacket`을 새로 만들어도 이미 생성된 R/I/B/LW/SW 객체가 초기화되는 것은 아니다. `packet.bt`에는 해당 명령어 객체를 가리키는 부모 타입 리모콘이 저장되고, `virtual print()`는 실제 자식 타입의 함수를 실행한다.
+
 ### MINOR-1 · `q=[...]NOT Dependent`가 한 줄에 붙음
 
 - [증상] `q = [ ... ]NOT Dependent`로 출력되어 경계가 보기 어려움.
@@ -206,11 +258,19 @@
 
 ---
 
-## [다음 2차 작업]
+## [2차 검증 결과 — PASS, 2026-08-29]
 
-1차는 기능 확인용으로 통과. 다음에는 출력과 상태 전달을 mailbox 기반으로 변경한다.
+- Vivado xsim compile / elaborate / run 성공
+- 단일 `mailbox #(DepPacket)`으로 50개 wrapper 전송 완료
+- `DepPacket` 안의 `BaseTr bt`가 실제 R/I/B/F_LW/F_SW 자식 객체를 유지하고 virtual `print()` 정상 호출
+- `DEPENDENT`와 `NOT dependent`가 정상적으로 섞여 출력
+- dependent packet의 queue snapshot 안에 target 존재
+- `distance=index+1`, 거리 1~6 확인
+- target과 실제 Rs1 또는 Rs2 일치
+- R=10, I=15, B=11, LW=6, FLW=3, SW=1, FSW=4 → 합계 50
+- Scoreboard가 공유 Tracker 최신 상태를 읽지 않고 수신한 packet snapshot만 사용
 
-- transaction에 `dep_applied`, `target`, `distance` 저장
-- 필요하면 생성 당시 queue snapshot도 저장
-- Scoreboard에서 공유 Tracker 최신값을 읽지 않고 받은 transaction만 출력
-- `write/Rd 설정 → run()` 방식은 나중에 `record_Rd(rd)`처럼 인자를 직접 전달하는 API로 정리
+## [다음 작업]
+
+- 로드맵② `interface → modport → clocking block → virtual interface`
+- `write/Rd 설정 → run()` 방식은 이후 `record_Rd(rd)`처럼 인자를 직접 전달하는 API로 정리 가능

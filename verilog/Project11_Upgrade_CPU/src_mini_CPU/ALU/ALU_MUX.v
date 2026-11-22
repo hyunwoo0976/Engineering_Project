@@ -1,6 +1,4 @@
-module ALU_MUX #(
-    parameter W = 32
-) (
+module ALU_MUX #(parameter W = 32)(
     input [W-1:0] logic_result,
     input [W-1:0] calculate_result,
     input [W-1:0] shift_result,

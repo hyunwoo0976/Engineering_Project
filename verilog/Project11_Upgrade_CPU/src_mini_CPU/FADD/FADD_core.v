@@ -1,7 +1,5 @@
 `default_nettype none
-module FADD_core #(
-    parameter W = 32
-) (
+module FADD_core #(parameter W = 32)(
     input wire s1_en,
     input wire s1_SIGN_A, s1_SIGN_B,
     input wire [7:0] s1_EXPO_A, s1_EXPO_B,

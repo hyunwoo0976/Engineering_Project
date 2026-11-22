@@ -1,6 +1,4 @@
-module ALU_Control #(
-    parameter W = 32
-) (
+module ALU_Control #(parameter W = 32)(
     input funct7_bit30,
     input [2:0] Funct3,
     input [1:0] ALUOp,

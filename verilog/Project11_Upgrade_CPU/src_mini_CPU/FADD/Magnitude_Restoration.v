@@ -1,6 +1,4 @@
-module Magnitude_Restoration #(
-    parameter W = 48
-) (
+module Magnitude_Restoration #(parameter W = 48)(
     input [W-1:0] Sum_1, Sum_2,
     input cout_1,
     input eff_sub,

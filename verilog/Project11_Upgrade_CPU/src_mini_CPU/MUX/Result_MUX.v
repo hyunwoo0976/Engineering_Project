@@ -1,6 +1,4 @@
-module Result_MUX #(
-    parameter W = 32
-) (
+module Result_MUX #(parameter W = 32)(
     input [W-1:0] ALU_Result,
     input [W-1:0] FPU_Result,
     input FPU_Valid,

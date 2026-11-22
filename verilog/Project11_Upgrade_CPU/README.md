@@ -34,7 +34,7 @@ python tools/run_regression.py --quick
 Vivado 실험은 [compare_vivado.tcl](tools/compare_vivado.tcl)을 사용한다. 기준 부품 `xc7a35tcpg236-1`, 20ns 내부 클럭, OOC FPU만 비교한다. **실제 보드나 CPU 전체의 성능이 아니다.**
 
 ```powershell
-& 'D:\My_project\2026.1\Vivado\bin\vivado.bat' -mode batch -source tools/compare_vivado.tcl -tclargs xc7a35tcpg236-1
+& 'D:\My_project\Engineering_Project\development\2026.1\Vivado\bin\vivado.bat' -mode batch -source tools/compare_vivado.tcl -tclargs xc7a35tcpg236-1
 ```
 
 ## 문서

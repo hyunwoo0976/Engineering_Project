@@ -1,7 +1,5 @@
 `default_nettype none
-module Pipeline_CPU #(
-    parameter W = 32
-) (
+module Pipeline_CPU #(parameter W = 32)(
     input wire clk, reset,
     output wire [W-1:0] current_pc,
     output wire [W-1:0] current_inst,
@@ -261,10 +259,7 @@ module Pipeline_CPU #(
         .Rs2_data(ID_B),
         .Rt_data()
     );
-    Register_file #(
-        .W(W),
-        .ZERO_REGISTER(0)
-    ) u_FPU_Regfile(
+    Register_file #(.W(W), .ZERO_REGISTER(0)) u_FPU_Regfile(
         .clk(clk),
         .reset(reset),
 

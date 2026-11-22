@@ -1,6 +1,4 @@
-module PC_MUX #(
-    parameter W = 32
-) (
+module PC_MUX #(parameter W = 32)(
     input [W-1:0] Target,
     input [W-1:0] Early_Target,
     input [W-1:0] JALR_Target,

@@ -1,6 +1,4 @@
-module ALU_B_MUX #(
-    parameter W = 32
-) (
+module ALU_B_MUX #(parameter W = 32)(
     input ALUsrc,
     input Forward,
     input [W-1:0] Imm,

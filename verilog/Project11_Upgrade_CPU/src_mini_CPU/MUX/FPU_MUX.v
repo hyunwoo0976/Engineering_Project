@@ -1,6 +1,4 @@
-module FPU_MUX #(
-    parameter W = 32
-) (
+module FPU_MUX #(parameter W = 32)(
     input [W-1:0] FPU_Result,
     input FPU_Valid,
     output reg [W-1:0] EX_FPU_Result

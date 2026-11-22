@@ -1,6 +1,4 @@
-module Main_Decoder #(
-    parameter W = 32
-) (
+module Main_Decoder #(parameter W = 32)(
     input [W-1:0] instruction,
     output reg RegWrite,  //save the value to the register file when finished?
     output reg MemWrite,  //write the value to RAM

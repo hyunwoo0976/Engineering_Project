@@ -1,4 +1,4 @@
-module N_bit_adder#(parameter N=4)(
+module N_bit_adder #(parameter N=4)(
     input [N-1:0] a,b,
     input cin,
     output [N-1:0] sum,

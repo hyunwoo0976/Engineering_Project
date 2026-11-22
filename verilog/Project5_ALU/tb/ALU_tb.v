@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-module ALU_tb#(parameter N=4);
+module ALU_tb #(parameter N=4);
     reg [N-1:0] x, y;
     reg [1:0] mode;
     reg cin;

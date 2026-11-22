@@ -1,6 +1,4 @@
-module FPU_unpack #(
-    parameter W = 32
-) (
+module FPU_unpack #(parameter W = 32)(
     input [W-1:0] IN,
     input FPU_en,
     output SIGN,

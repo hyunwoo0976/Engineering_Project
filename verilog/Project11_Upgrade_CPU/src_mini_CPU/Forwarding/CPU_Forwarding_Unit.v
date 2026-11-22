@@ -1,6 +1,4 @@
-module CPU_Forwarding_Unit #(
-    parameter W = 32
-) (
+module CPU_Forwarding_Unit #(parameter W = 32)(
     input MEM_RegWrite, WB_RegWrite,
     input [4:0] MEM_Rd, WB_Rd,
     input [4:0] EX_Rs1, EX_Rs2,

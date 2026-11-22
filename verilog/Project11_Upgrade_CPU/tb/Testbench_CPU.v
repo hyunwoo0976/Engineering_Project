@@ -1,7 +1,5 @@
 `timescale 1ns / 1ps
-module Testbench_CPU #(
-    parameter W = 32
-);
+module Testbench_CPU #(parameter W = 32);
     reg clk, reset;
     wire [W-1:0] current_pc;
     wire [W-1:0] current_inst;

@@ -1,6 +1,4 @@
-module FPU_Control #(
-    parameter W = 32
-) (
+module FPU_Control #(parameter W = 32)(
     input [6:0] Funct7,
     input [2:0] Funct3,
     input is_FPU,

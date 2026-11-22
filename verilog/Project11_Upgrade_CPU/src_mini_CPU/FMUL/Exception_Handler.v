@@ -1,6 +1,4 @@
-module Exception_Handler #(
-    parameter W = 32
-) (
+module Exception_Handler #(parameter W = 32)(
     input OF, UF,
     input SIGN,
     input [7:0] EXPO,

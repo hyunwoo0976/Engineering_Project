@@ -1,6 +1,4 @@
-module Instruction_Memory #(
-    parameter W = 32
-) (
+module Instruction_Memory #(parameter W = 32)(
     input [W-1:0] pc,
     output [W-1:0] instruction
 );

@@ -1,6 +1,4 @@
-module EXPO_MUX #(
-    parameter W = 9
-) (
+module EXPO_MUX #(parameter W = 9)(
     input [W-1:0] EXPO_in,
     input count,
     input EXPO_break,

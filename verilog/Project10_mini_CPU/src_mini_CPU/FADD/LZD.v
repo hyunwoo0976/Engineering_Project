@@ -1,4 +1,4 @@
-module LZD#(parameter W = 48)(
+module LZD #(parameter W = 48)(
     input[W-1:0] Sum,
     output reg [5:0]count,
     output reg all_zero

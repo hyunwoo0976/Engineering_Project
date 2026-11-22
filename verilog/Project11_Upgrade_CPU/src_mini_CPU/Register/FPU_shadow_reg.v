@@ -1,6 +1,4 @@
-module FPU_shadow_reg #(
-    parameter W = 32
-) (
+module FPU_shadow_reg #(parameter W = 32)(
     input clk, reset,
     input EX_is_FPU,
     input FPU_Valid,

@@ -1,9 +1,7 @@
 `default_nettype none
 // A 24x24 product has its binary point below bit 46.
 // Normalize to hidden bit 47, then denormalize if the exponent is below 1.
-module Normalization_MUL #(
-    parameter W = 48
-) (
+module Normalization_MUL #(parameter W = 48)(
     input wire [W-1:0] FRAC_mul,
     input wire signed [11:0] EXPO_base,
     output reg [47:0] FRAC_out,

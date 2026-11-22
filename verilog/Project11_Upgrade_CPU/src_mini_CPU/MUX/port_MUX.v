@@ -1,6 +1,4 @@
-module port_MUX #(
-    parameter W = 32
-) (
+module port_MUX #(parameter W = 32)(
     input [1:0] MEMtoEX_forward, WBtoEX_forward,
     input [W-1:0] MEM_value, WB_value,
     input [W-1:0] imm,

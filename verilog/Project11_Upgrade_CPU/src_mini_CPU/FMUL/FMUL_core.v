@@ -1,7 +1,5 @@
 `default_nettype none
-module FMUL_core #(
-    parameter W = 32
-) (
+module FMUL_core #(parameter W = 32)(
     input wire s1_en, s1_SIGN_A, s1_SIGN_B,
     input wire [7:0] s1_EXPO_A, s1_EXPO_B,
     input wire [22:0] s1_FRAC_A, s1_FRAC_B,

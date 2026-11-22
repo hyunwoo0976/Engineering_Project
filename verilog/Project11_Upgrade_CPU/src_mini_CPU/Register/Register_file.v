@@ -1,7 +1,4 @@
-module Register_file #(
-    parameter W = 32,
-    parameter ZERO_REGISTER = 1
-) (
+module Register_file #(parameter W = 32, parameter ZERO_REGISTER = 1)(
     input [W-1:0] we_data,
     input [4:0] we_addr,
     input [4:0] Rs1_addr, Rs2_addr, Rt_addr,
@@ -25,9 +22,7 @@ module Register_file #(
         end
     end
 
-    assign
-        Rs1_data = (ZERO_REGISTER && Rs1_addr == 5'd0) ? 32'b0 : (we && we_addr == Rs1_addr) ? we_data : mem[Rs1_addr];
-    assign
-        Rs2_data = (ZERO_REGISTER && Rs2_addr == 5'd0) ? 32'b0 : (we && we_addr == Rs2_addr) ? we_data : mem[Rs2_addr];
+    assign Rs1_data = (ZERO_REGISTER && Rs1_addr == 5'd0) ? 32'b0 : (we && we_addr == Rs1_addr) ? we_data : mem[Rs1_addr];
+    assign Rs2_data = (ZERO_REGISTER && Rs2_addr == 5'd0) ? 32'b0 : (we && we_addr == Rs2_addr) ? we_data : mem[Rs2_addr];
     assign Rt_data = (ZERO_REGISTER && Rt_addr == 5'd0) ? 32'b0 : mem[Rt_addr];
 endmodule

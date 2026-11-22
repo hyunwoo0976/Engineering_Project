@@ -5,7 +5,15 @@ class BaseTr;
     virtual function void print();
         $write("%b",Rd);
     endfunction
+    
+    constraint BaseTr_Rd{
+        Rd != 5'b0;
+    }
+
 endclass
+
+typedef class DependencyTracker;    //class가 선언될거라는 신호
+typedef class DepPacket;
 
 class R_type extends BaseTr;                                                    //R-type: Rd / Rs1, Rs2
     rand bit[4:0] Rs1, Rs2;
@@ -129,20 +137,20 @@ class B_type extends BaseTr;                                                    
     endfunction
 endclass
 
-typedef class DependencyTracker;    //class가 선언될거라는 신호
+
 
 class Generator;
-    mailbox #(BaseTr) mb;
+    mailbox #(DepPacket) mb;
     DependencyTracker d_handle;
-    bit[4:0] last_rd;
-    bit have_last = 0;
+    DepPacket handle;
+
     rand bit dep_c;
     int coin;
     bit write;
 
+    
 
-
-    function new(mailbox #(BaseTr)mb, DependencyTracker Tracker);
+    function new(mailbox #(DepPacket)mb, DependencyTracker Tracker);
         this.mb = mb;
         d_handle = Tracker;
     endfunction
@@ -153,7 +161,8 @@ class Generator;
             d_handle.write = 1'b0;
             coin = $urandom_range(4, 0);
             dep_c = $urandom_range(1, 0);
-
+            handle = new();
+            
             case(coin)
                 //R-type
                 0: begin
@@ -178,9 +187,10 @@ class Generator;
                         end
                     end
                     d_handle.Rd = r_handle.Rd;
-                    d_handle.print_q();
+                    d_handle.pre_send(handle);
                     d_handle.run();
-                    mb.put(r_handle);
+                    handle.bt = r_handle;
+                    mb.put(handle);
                 end
 
                 //I_type
@@ -199,9 +209,10 @@ class Generator;
                         end
                     end
                     d_handle.Rd = i_handle.Rd;
-                    d_handle.print_q();
+                    d_handle.pre_send(handle);
                     d_handle.run();
-                    mb.put(i_handle);
+                    handle.bt = i_handle;
+                    mb.put(handle);
                 end
 
                 //F_LW
@@ -227,13 +238,14 @@ class Generator;
                             $fatal(1,"ERROR");
                         end
                     end
-                    d_handle.print_q();
+                    d_handle.pre_send(handle);
+
                     if(l_handle.opcode == 7'b0000011)begin
                         d_handle.Rd = l_handle.Rd;
                         d_handle.run();
                     end
-
-                    mb.put(l_handle);
+                    handle.bt = l_handle;
+                    mb.put(handle);
                 end
 
                 //F_SW
@@ -260,14 +272,15 @@ class Generator;
                             end
                         end
                     end
-                    else begin
+                    else begin                      //FSW
                         d_handle.doing = 1'b0;
                         if(!s_handle.randomize() with{opcode == 7'b0100111;})begin
                             $fatal(1,"ERROR");
                         end
                     end
-                    d_handle.print_q();
-                    mb.put(s_handle);
+                    d_handle.pre_send(handle);
+                    handle.bt = s_handle;
+                    mb.put(handle);
                 end
 
                 //B-type
@@ -292,16 +305,18 @@ class Generator;
                             $fatal(1,"ERROR");
                         end
                     end
-                    d_handle.print_q();
-                    mb.put(b_handle);
+                    d_handle.pre_send(handle);
+                    handle.bt = b_handle;
+                    mb.put(handle);
                 end
                 default: $fatal(1,"ERROR");
-            endcase
+            endcase 
         end
     endtask
 endclass
 
 class DependencyTracker;
+
     bit[4:0] recent_x_Rd[$];
     int index;
     bit[4:0] target;
@@ -311,23 +326,6 @@ class DependencyTracker;
     bit write;
     bit[4:0] Rd;
 
-    function void print_q();
-        $write("q = [");
-        foreach(recent_x_Rd[i]) $write(" %b ", recent_x_Rd[i]);
-        $write("]");
-    endfunction
-
-    function void print();
-        if(doing)begin
-            $display(" -> ");
-            $display("Dependent!!");
-            $display("target = %b", target);
-            $display("distance : %0d", index + 1);
-        end
-        else begin
-            $display("NOT Dependent");
-        end
-    endfunction
 
     task choose_Rd;
         begin
@@ -340,9 +338,18 @@ class DependencyTracker;
         end
     endtask
 
+    task pre_send(DepPacket handle);
+        begin
+            handle.doing = doing;
+            handle.distance = index + 1;
+            handle.target = target;
+            handle.recent_x_Rd = recent_x_Rd;
+        end
+    endtask
+
     task run;
         begin
-            if(write && Rd != 5'b0)begin
+            if(write)begin
                 recent_x_Rd.push_front(Rd);
             end
             if(recent_x_Rd.size() > MAXQ)begin
@@ -352,10 +359,33 @@ class DependencyTracker;
     endtask
 endclass
 
+class DepPacket;
+    BaseTr bt;
+    bit[4:0] recent_x_Rd[$];
+    bit[4:0] target;
+    int distance;
+    bit doing;
+
+    function void print();
+        if(doing)begin
+            $display ("DEPENDENT !!!");
+            $write("\n");
+            $write("p = [");
+            foreach(recent_x_Rd[i]) $write(" %b ", recent_x_Rd[i]);
+            $write ("]"); $write("\n");
+            $write(" -> ");
+            $display(" distance : %0d | target : %b", distance, target);
+        end
+        else begin
+            $display("NOT dependent");
+        end
+    endfunction
+endclass
+
 
 class Scoreboard;
-    mailbox #(BaseTr)mb;
-    DependencyTracker d_handle;
+    mailbox #(DepPacket)mb;
+
     int It = 0;
     int Rt = 0;
     int Bt = 0;
@@ -364,36 +394,36 @@ class Scoreboard;
     int LWt = 0;
     int FLWt = 0;
 
-    function new(mailbox #(BaseTr)mb, DependencyTracker Tracker);
+    function new(mailbox #(DepPacket)mb);
         this.mb = mb;
-        d_handle = Tracker;
     endfunction
 
     task run;
         begin
-            BaseTr handle;
+            DepPacket handle;
             mb.get(handle);
-            d_handle.print();
+            $display("=======================================");
             handle.print();
-            if(handle.inst[6:0] == 7'b0010011)begin
+            handle.bt.print();
+            if(handle.bt.inst[6:0] == 7'b0010011)begin
                 It++;
             end
-            if(handle.inst[6:0] == 7'b0110011)begin
+            if(handle.bt.inst[6:0] == 7'b0110011)begin
                 Rt++;
             end
-            if(handle.inst[6:0] == 7'b1100011)begin
+            if(handle.bt.inst[6:0] == 7'b1100011)begin
                 Bt++;
             end
-            if(handle.inst[6:0] == 7'b0100011)begin
+            if(handle.bt.inst[6:0] == 7'b0100011)begin
                 SWt++;
             end
-            if(handle.inst[6:0] == 7'b0100111)begin
+            if(handle.bt.inst[6:0] == 7'b0100111)begin
                 FSWt++;
             end
-            if(handle.inst[6:0] == 7'b0000011)begin
+            if(handle.bt.inst[6:0] == 7'b0000011)begin
                 LWt++;
             end
-            if(handle.inst[6:0] == 7'b0000111)begin
+            if(handle.bt.inst[6:0] == 7'b0000111)begin
                 FLWt++;
             end
         end
@@ -401,16 +431,15 @@ class Scoreboard;
 endclass
 
 module Top;
-    mailbox #(BaseTr)mb = new();
+    mailbox #(DepPacket)mb = new();
 
     DependencyTracker den = new();
-
     Generator gen = new(mb, den);
-    Scoreboard scr = new(mb, den);
+    Scoreboard scr = new(mb);
+    
 
     initial begin
         repeat(50)begin
-            $display("==============//////////////////////////==============");
             fork
                 gen.run();
                 scr.run();
@@ -419,3 +448,4 @@ module Top;
         $display("R-type: %0d || I-type: %0d || B-type: %0d || LW: %0d || FLW: %0d || SW: %0d || FSW: %0d", scr.Rt, scr.It, scr.Bt, scr.LWt,scr.FLWt, scr.SWt, scr.FSWt);
     end
 endmodule
+

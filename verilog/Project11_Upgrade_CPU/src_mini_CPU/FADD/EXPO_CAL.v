@@ -1,6 +1,4 @@
-module EXPO_CAL #(
-    parameter W = 9
-) (
+module EXPO_CAL #(parameter W = 9)(
     input [W-1:0] EXPO_in,
     input [5:0] count,
     input direction,

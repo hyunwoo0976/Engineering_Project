@@ -1,6 +1,4 @@
-module Forwarding_Unit #(
-    parameter W = 32
-) (
+module Forwarding_Unit #(parameter W = 32)(
     input MEM_RegWrite, WB_RegWrite,
     input MEM_FRegWrite, WB_FRegWrite,
     input EX_is_FPU, EX_is_FLW, EX_is_FSW,
